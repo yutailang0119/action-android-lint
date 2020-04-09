@@ -25,7 +25,8 @@
   "author": "Yutaro Muta",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.0"
+    "@actions/core": "^1.2.0",
+    "htmlparser2": "^4.1.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
