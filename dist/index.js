@@ -76,8 +76,8 @@ const core = __importStar(__webpack_require__(470));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const reportFilePath = core.getInput('reportFilePath', { required: true });
-            core.debug(`Report filr path: ${reportFilePath}`);
+            const reportXmlPath = core.getInput('reportXmlPath', { required: true });
+            core.debug(`Report xml path: ${reportXmlPath}`);
         }
         catch (error) {
             core.setFailed(error.message);

@@ -2,8 +2,8 @@ import * as core from '@actions/core'
 
 async function run(): Promise<void> {
   try {
-    const reportFilePath = core.getInput('reportFilePath', {required: true})
-    core.debug(`Report filr path: ${reportFilePath}`)
+    const reportXmlPath = core.getInput('reportXmlPath', {required: true})
+    core.debug(`Report xml path: ${reportXmlPath}`)
   } catch (error) {
     core.setFailed(error.message)
   }
