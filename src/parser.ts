@@ -21,8 +21,6 @@ export async function parseXml(reportXml: string): Promise<Message[]> {
             parseInt(location.column),
             `${issue.summary}: ${issue.message}`
           )
-          core.debug(`Severity: ${message.severity}`)
-          core.debug(`Summary: ${message.description}`)
           messages.push(message)
         }
       }
