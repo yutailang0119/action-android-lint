@@ -8,19 +8,19 @@ const parseToAnnotations = async (reportXml: string): Promise<Annotation[]> => {
   const xml = await parser.parseStringPromise(reportXml)
 
   const annotations: Annotation[] = []
-  for (const issue of xml.issues.issue) {
-    const data = issue.$
+  for (const issueElement of xml.issues.issue) {
+    const issue = issueElement.$
 
-    for (const entry of issue.location) {
-      const location = entry.$
+    for (const locationElement of issueElement.location) {
+      const location = locationElement.$
 
       const annotation = new Annotation(
-        data.severity,
+        issue.severity,
         location.file,
         parseInt(location.line),
         parseInt(location.column),
-        data.summary,
-        data.message
+        issue.summary,
+        issue.message
       )
       core.debug(`Severity: ${annotation.severity}`)
       core.debug(`Summary: ${annotation.summary}`)
