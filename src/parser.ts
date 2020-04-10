@@ -7,7 +7,7 @@ const parseMessages = async (reportXml: string): Promise<Message[]> => {
   const parser = new xml2js.Parser()
   const xml = await parser.parseStringPromise(reportXml)
 
-  let messages: Message[] = []
+  const messages: Message[] = []
   for (const issueElement of xml.issues.issue) {
     const issue = issueElement.$
 
