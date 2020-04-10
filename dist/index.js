@@ -149,15 +149,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
+const fs_1 = __importDefault(__webpack_require__(747));
 const parser_1 = __webpack_require__(806);
 const command_1 = __webpack_require__(600);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const reportXmlPath = core.getInput('reportXmlPath', { required: true });
-            const messages = yield parser_1.parse(reportXmlPath);
+            const reportXml = fs_1.default.readFileSync(reportXmlPath, 'utf-8');
+            const messages = yield parser_1.parseXml(reportXml);
             yield command_1.echoMessages(messages);
         }
         catch (error) {
@@ -2106,7 +2111,7 @@ exports.workflowMessage = (message) => {
 function echoMessages(messages) {
     return __awaiter(this, void 0, void 0, function* () {
         for (const message of messages) {
-            core.debug(exports.workflowMessage(message));
+            core.info(exports.workflowMessage(message));
         }
     });
 }
@@ -6438,37 +6443,26 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const xml2js = __importStar(__webpack_require__(992));
-const fs_1 = __importDefault(__webpack_require__(747));
 const message_1 = __webpack_require__(247);
-const parseMessages = (reportXml) => __awaiter(void 0, void 0, void 0, function* () {
-    const parser = new xml2js.Parser();
-    const xml = yield parser.parseStringPromise(reportXml);
-    const messages = [];
-    for (const issueElement of xml.issues.issue) {
-        const issue = issueElement.$;
-        for (const locationElement of issueElement.location) {
-            const location = locationElement.$;
-            const message = new message_1.Message(issue.severity, location.file, parseInt(location.line), parseInt(location.column), `${issue.summary}: ${issue.message}`);
-            core.debug(`Severity: ${message.severity}`);
-            core.debug(`Summary: ${message.description}`);
-            messages.push(message);
-        }
-    }
-    return messages;
-});
-function parse(reportXmlPath) {
+function parseXml(reportXml) {
     return __awaiter(this, void 0, void 0, function* () {
+        const parser = new xml2js.Parser();
+        const xml = yield parser.parseStringPromise(reportXml);
         return new Promise(resolve => {
             try {
-                const reportXml = fs_1.default.readFileSync(reportXmlPath, 'utf-8');
-                const annotations = parseMessages(reportXml);
-                resolve(annotations);
+                const messages = [];
+                for (const issueElement of xml.issues.issue) {
+                    const issue = issueElement.$;
+                    for (const locationElement of issueElement.location) {
+                        const location = locationElement.$;
+                        const message = new message_1.Message(issue.severity, location.file, parseInt(location.line), parseInt(location.column), `${issue.summary}: ${issue.message}`);
+                        messages.push(message);
+                    }
+                }
+                resolve(messages);
             }
             catch (error) {
                 core.debug(`failed to read ${error}`);
@@ -6476,7 +6470,7 @@ function parse(reportXmlPath) {
         });
     });
 }
-exports.parse = parse;
+exports.parseXml = parseXml;
 
 
 /***/ }),
