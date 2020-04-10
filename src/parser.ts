@@ -1,26 +1,41 @@
 import * as core from '@actions/core'
-import {Parser} from 'htmlparser2'
+import * as xml2js from 'xml2js'
 import fs from 'fs'
+import {Annotation} from './annotation'
 
-export async function parse(reportXmlPath: string): Promise<string[]> {
+const parseToAnnotations = async (reportXml: string): Promise<Annotation[]> => {
+  const parser = new xml2js.Parser()
+  const result = await parser.parseStringPromise(reportXml)
+
+  const annotations: Annotation[] = []
+  for (const issue of result.issues.issue) {
+    const data = issue.$
+
+    for (const entry of issue.location) {
+      const location = entry.$
+
+      const annotation = new Annotation(
+        location.file,
+        parseInt(location.line),
+        parseInt(location.column),
+        data.summary,
+        data.message
+      )
+      core.debug(`${annotation.summary}`)
+      core.debug(`${annotation.message}`)
+      annotations.push(annotation)
+    }
+  }
+
+  return annotations
+}
+
+export async function parse(reportXmlPath: string): Promise<Annotation[]> {
   return new Promise(resolve => {
     try {
       const reportXml = fs.readFileSync(reportXmlPath, 'utf-8')
-      const buffer: string[] = []
-      const parser = new Parser(
-        {
-          ontext(text) {
-            core.debug(`--> ${text}`)
-          }
-        },
-        {
-          decodeEntities: false,
-          xmlMode: true
-        }
-      )
-      parser.write(reportXml)
-      parser.end()
-      resolve(buffer)
+      const annotations = parseToAnnotations(reportXml)
+      resolve(annotations)
     } catch (error) {
       core.debug(`failed to read ${error}`)
     }
