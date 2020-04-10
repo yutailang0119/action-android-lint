@@ -1,23 +1,31 @@
 import {parseXml} from '../src/parser'
+import {Message} from '../src/message'
 
 test('test parse', () => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
   <issues format="5" by="lint 3.6.1">
       <issue
-          id="ScrollViewSize"
-          severity="Warning"
-          message="This LinearLayout should use \`android:layout_height=&quot;wrap_content&quot;\`"
+          id="CheckResult"
+          severity="Error"
+          message="The result of \`subscribe\` is not used"
           category="Correctness"
-          priority="7"
-          summary="ScrollView size validation"
-          explanation="ScrollView children must set their \`layout_width\` or \`layout_height\` attributes to \`wrap_content\` rather than \`fill_parent\` or \`match_parent\` in the scrolling dimension"
-          errorLine1="                android:layout_height=&quot;match_parent&quot;"
-          errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+          priority="6"
+          summary="Ignoring results"
+          explanation="Some methods have no side effects, and calling them without doing something without the result is suspicious."
+          errorLine1="        lifecycle.subscribe { event ->"
+          errorLine2="        ^">
           <location
-              file="layout.xml"
-              line="32"
-              column="17"/>
+              file="Foo.kt"
+              line="33"
+              column="44"/>
       </issue>
   </issues>`
-  const message = expect(parseXml(xml))
+  const message = new Message(
+    'Error',
+    'Foo.kt',
+    33,
+    44,
+    'Ignoring results: The result of `subscribe` is not used'
+  )
+  expect(parseXml(xml)).resolves.toEqual([message])
 })
