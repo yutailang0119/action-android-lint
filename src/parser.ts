@@ -5,10 +5,10 @@ import {Annotation} from './annotation'
 
 const parseToAnnotations = async (reportXml: string): Promise<Annotation[]> => {
   const parser = new xml2js.Parser()
-  const result = await parser.parseStringPromise(reportXml)
+  const xml = await parser.parseStringPromise(reportXml)
 
   const annotations: Annotation[] = []
-  for (const issue of result.issues.issue) {
+  for (const issue of xml.issues.issue) {
     const data = issue.$
 
     for (const entry of issue.location) {
