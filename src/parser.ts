@@ -15,14 +15,16 @@ const parseToAnnotations = async (reportXml: string): Promise<Annotation[]> => {
       const location = entry.$
 
       const annotation = new Annotation(
+        data.severity,
         location.file,
         parseInt(location.line),
         parseInt(location.column),
         data.summary,
         data.message
       )
-      core.debug(`${annotation.summary}`)
-      core.debug(`${annotation.message}`)
+      core.debug(`Severity: ${annotation.severity}`)
+      core.debug(`Summary: ${annotation.summary}`)
+      core.debug(`Mesage: ${annotation.message}`)
       annotations.push(annotation)
     }
   }
