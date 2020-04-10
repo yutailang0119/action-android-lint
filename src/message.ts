@@ -1,25 +1,22 @@
-export class Annotation {
+export class Message {
   severity: Severity
   path: string
   line: number
   column: number
-  summary: string
-  message: string
+  description: string
 
   constructor(
     severity: string,
     path: string,
     line: number,
     column: number,
-    summary: string,
-    message: string
+    description: string
   ) {
     this.severity = severity === 'Warning' ? Severity.Warning : Severity.Error
     this.path = path
     this.line = line
     this.column = column
-    this.summary = summary
-    this.message = message
+    this.description = description
   }
 }
 
