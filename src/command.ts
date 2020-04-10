@@ -7,6 +7,6 @@ export const workflowMessage = (message: Message): string => {
 
 export async function echoMessages(messages: Message[]): Promise<void> {
   for (const message of messages) {
-    core.debug(workflowMessage(message))
+    core.info(workflowMessage(message))
   }
 }
