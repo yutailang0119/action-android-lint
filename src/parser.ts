@@ -1,6 +1,5 @@
 import * as core from '@actions/core'
 import * as xml2js from 'xml2js'
-import fs from 'fs'
 import {Message} from './message'
 
 const parseMessages = async (reportXml: string): Promise<Message[]> => {
@@ -30,12 +29,11 @@ const parseMessages = async (reportXml: string): Promise<Message[]> => {
   return messages
 }
 
-export async function parse(reportXmlPath: string): Promise<Message[]> {
+export async function parseXml(reportXml: string): Promise<Message[]> {
   return new Promise(resolve => {
     try {
-      const reportXml = fs.readFileSync(reportXmlPath, 'utf-8')
-      const annotations = parseMessages(reportXml)
-      resolve(annotations)
+      const mesasges = parseMessages(reportXml)
+      resolve(mesasges)
     } catch (error) {
       core.debug(`failed to read ${error}`)
     }
