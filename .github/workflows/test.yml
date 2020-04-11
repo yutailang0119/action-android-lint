@@ -1,5 +1,5 @@
 name: "build-test"
-on: # rebuild any PRs and main branch changes
+on:
   pull_request:
   push:
     branches:
@@ -7,17 +7,26 @@ on: # rebuild any PRs and main branch changes
       - 'releases/*'
 
 jobs:
-  build: # make sure build/ci work properly
+  test_ci:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - run: |
+    - uses: actions/checkout@v2
+    - name: install
+      run: |
         npm install
-        npm run all
-  test: # make sure the action works on a clean machine without building
+    - name: lint
+      run: |
+        npm run lint
+    - name: build
+      run: |
+        npm run build
+    - name: test
+      run: |
+        npm run test
+  test_run:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
     - uses: ./
       with: 
         reportXmlPath: ${{ github.workspace }}/__tests__/resource/sample-lint-results.xml
