@@ -26,7 +26,7 @@ jobs:
   test_run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
     - uses: ./
       with: 
         reportXmlPath: ${{ github.workspace }}/__tests__/resource/sample-lint-results.xml
