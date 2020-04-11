@@ -162,8 +162,8 @@ function run() {
         try {
             const reportXmlPath = core.getInput('reportXmlPath', { required: true });
             const reportXml = fs_1.default.readFileSync(reportXmlPath, 'utf-8');
-            const messages = yield parser_1.parseXml(reportXml);
-            yield command_1.echoMessages(messages);
+            const annotations = yield parser_1.parseXml(reportXml);
+            yield command_1.echoMessages(annotations);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -201,27 +201,28 @@ module.exports = require("timers");
 
 /***/ }),
 
-/***/ 247:
+/***/ 234:
 /***/ (function(__unusedmodule, exports) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-class Message {
-    constructor(severity, path, line, column, description) {
-        this.severity = severity === 'Warning' ? Severity.Warning : Severity.Error;
+class Annotation {
+    constructor(level, path, line, column, message) {
+        this.level =
+            level === 'Warning' ? AnnotationLevel.Warning : AnnotationLevel.Error;
         this.path = path;
         this.line = line;
         this.column = column;
-        this.description = description;
+        this.message = message;
     }
 }
-exports.Message = Message;
-var Severity;
-(function (Severity) {
-    Severity["Warning"] = "warning";
-    Severity["Error"] = "error";
-})(Severity || (Severity = {}));
+exports.Annotation = Annotation;
+var AnnotationLevel;
+(function (AnnotationLevel) {
+    AnnotationLevel["Warning"] = "warning";
+    AnnotationLevel["Error"] = "error";
+})(AnnotationLevel || (AnnotationLevel = {}));
 
 
 /***/ }),
@@ -2105,13 +2106,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
-exports.workflowMessage = (message) => {
-    return `::${message.severity} file=${message.path},line=${message.line},col=${message.column}::${message.description}`;
+exports.workflowMessage = (annotation) => {
+    return `::${annotation.level} file=${annotation.path},line=${annotation.line},col=${annotation.column}::${annotation.message}`;
 };
-function echoMessages(messages) {
+function echoMessages(annotations) {
     return __awaiter(this, void 0, void 0, function* () {
-        for (const message of messages) {
-            core.info(exports.workflowMessage(message));
+        for (const annotation of annotations) {
+            core.info(exports.workflowMessage(annotation));
         }
     });
 }
@@ -6446,23 +6447,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const xml2js = __importStar(__webpack_require__(992));
-const message_1 = __webpack_require__(247);
+const annotation_1 = __webpack_require__(234);
 function parseXml(reportXml) {
     return __awaiter(this, void 0, void 0, function* () {
         const parser = new xml2js.Parser();
         const xml = yield parser.parseStringPromise(reportXml);
         return new Promise(resolve => {
             try {
-                const messages = [];
+                const annotations = [];
                 for (const issueElement of xml.issues.issue) {
                     const issue = issueElement.$;
                     for (const locationElement of issueElement.location) {
                         const location = locationElement.$;
-                        const message = new message_1.Message(issue.severity, location.file, parseInt(location.line), parseInt(location.column), `${issue.summary}: ${issue.message}`);
-                        messages.push(message);
+                        const annotation = new annotation_1.Annotation(issue.severity, location.file, parseInt(location.line), parseInt(location.column), `${issue.summary}: ${issue.message}`);
+                        annotations.push(annotation);
                     }
                 }
-                resolve(messages);
+                resolve(annotations);
             }
             catch (error) {
                 core.debug(`failed to read ${error}`);

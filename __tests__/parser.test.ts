@@ -1,5 +1,5 @@
 import {parseXml} from '../src/parser'
-import {Message} from '../src/message'
+import {Annotation} from '../src/annotation'
 
 test('test parse', () => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -20,12 +20,12 @@ test('test parse', () => {
               column="44"/>
       </issue>
   </issues>`
-  const message = new Message(
+  const annotation = new Annotation(
     'Error',
     'Foo.kt',
     33,
     44,
     'Ignoring results: The result of `subscribe` is not used'
   )
-  expect(parseXml(xml)).resolves.toEqual([message])
+  expect(parseXml(xml)).resolves.toEqual([annotation])
 })

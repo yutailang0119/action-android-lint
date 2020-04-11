@@ -1,12 +1,12 @@
 import * as core from '@actions/core'
-import {Message} from './message'
+import {Annotation} from './annotation'
 
-export const workflowMessage = (message: Message): string => {
-  return `::${message.severity} file=${message.path},line=${message.line},col=${message.column}::${message.description}`
+export const workflowMessage = (annotation: Annotation): string => {
+  return `::${annotation.level} file=${annotation.path},line=${annotation.line},col=${annotation.column}::${annotation.message}`
 }
 
-export async function echoMessages(messages: Message[]): Promise<void> {
-  for (const message of messages) {
-    core.info(workflowMessage(message))
+export async function echoMessages(annotations: Annotation[]): Promise<void> {
+  for (const annotation of annotations) {
+    core.info(workflowMessage(annotation))
   }
 }

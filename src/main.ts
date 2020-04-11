@@ -7,8 +7,8 @@ async function run(): Promise<void> {
   try {
     const reportXmlPath = core.getInput('reportXmlPath', {required: true})
     const reportXml = fs.readFileSync(reportXmlPath, 'utf-8')
-    const messages = await parseXml(reportXml)
-    await echoMessages(messages)
+    const annotations = await parseXml(reportXml)
+    await echoMessages(annotations)
   } catch (error) {
     core.setFailed(error.message)
   }
