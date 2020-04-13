@@ -160,9 +160,9 @@ const command_1 = __webpack_require__(600);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const reportXmlPath = core.getInput('reportXmlPath', { required: true });
-            const reportXml = fs_1.default.readFileSync(reportXmlPath, 'utf-8');
-            const annotations = yield parser_1.parseXml(reportXml);
+            const xmlPath = core.getInput('xml_path', { required: true });
+            const xml = fs_1.default.readFileSync(xmlPath, 'utf-8');
+            const annotations = yield parser_1.parseXml(xml);
             yield command_1.echoMessages(annotations);
         }
         catch (error) {
