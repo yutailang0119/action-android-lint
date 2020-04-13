@@ -5,9 +5,9 @@ import {echoMessages} from './command'
 
 async function run(): Promise<void> {
   try {
-    const reportXmlPath = core.getInput('reportXmlPath', {required: true})
-    const reportXml = fs.readFileSync(reportXmlPath, 'utf-8')
-    const annotations = await parseXml(reportXml)
+    const xmlPath = core.getInput('xml_path', {required: true})
+    const xml = fs.readFileSync(xmlPath, 'utf-8')
+    const annotations = await parseXml(xml)
     await echoMessages(annotations)
   } catch (error) {
     core.setFailed(error.message)

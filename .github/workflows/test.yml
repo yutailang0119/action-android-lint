@@ -29,4 +29,4 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./
       with: 
-        reportXmlPath: ${{ github.workspace }}/__tests__/resource/sample-lint-results.xml
+        xml_path: ${{ github.workspace }}/__tests__/resource/sample-lint-results.xml

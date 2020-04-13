@@ -2,7 +2,7 @@ name: 'action-android-lint'
 description: 'A tool to enforce Android style and conventions'
 author: 'Yutaro Muta'
 inputs:
-  reportXmlPath:
+  xml_path:
     description: 'The file path of the XML lint report produced by gradle'
     required: true
 runs:
