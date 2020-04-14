@@ -1,4 +1,4 @@
-name: 'GitHub Actions for Android Lint'
+name: 'GitHub Action for Android Lint'
 description: 'A tool to enforce Android style and conventions'
 author: 'Yutaro Muta'
 inputs:

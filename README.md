@@ -1,6 +1,6 @@
 <a href="https://github.com/yutailang0119/action-android-lint/actions"><img alt="action-android-lint status" src="https://github.com/yutailang0119/action-android-lint/workflows/build-test/badge.svg"></a>
 
-# GitHub Actions for Android Lint
+# GitHub Action for Android Lint
 
 This Action generates annotations from [Android Lint](https://developer.android.com/studio/write/lint) Report XML.
 
