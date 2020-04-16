@@ -2131,14 +2131,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-exports.workflowMessage = (annotation) => {
-    return `::${annotation.level} file=${annotation.path},line=${annotation.line},col=${annotation.column}::${annotation.message}`;
+const command = __importStar(__webpack_require__(431));
+const commandProperties = (annotation) => {
+    return {
+        file: annotation.path,
+        line: `${annotation.line}`,
+        col: `${annotation.column}`
+    };
 };
 function echoMessages(annotations) {
     return __awaiter(this, void 0, void 0, function* () {
         for (const annotation of annotations) {
-            core.info(exports.workflowMessage(annotation));
+            command.issueCommand(annotation.level, commandProperties(annotation), annotation.message);
         }
     });
 }
