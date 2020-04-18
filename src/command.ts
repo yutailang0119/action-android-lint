@@ -1,12 +1,20 @@
-import * as core from '@actions/core'
+import * as command from '@actions/core/lib/command'
 import {Annotation} from './annotation'
 
-export const workflowMessage = (annotation: Annotation): string => {
-  return `::${annotation.level} file=${annotation.path},line=${annotation.line},col=${annotation.column}::${annotation.message}`
+const commandProperties = (annotation: Annotation): {[key: string]: string} => {
+  return {
+    file: annotation.path,
+    line: `${annotation.line}`,
+    col: `${annotation.column}`
+  }
 }
 
 export async function echoMessages(annotations: Annotation[]): Promise<void> {
   for (const annotation of annotations) {
-    core.info(workflowMessage(annotation))
+    command.issueCommand(
+      annotation.level,
+      commandProperties(annotation),
+      annotation.message
+    )
   }
 }
