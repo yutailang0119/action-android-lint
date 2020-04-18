@@ -16,7 +16,6 @@ on:
     paths:
       - .github/workflows/android-lint.yml
       - '*/src/**'
-      - '**.kts'
       - gradle/**
       - '**.gradle'
       - gradle.properties
@@ -32,7 +31,7 @@ jobs:
         with:
           java-version: 1.8
       - run: ./gradlew lint
-      - uses: yutailang0119/action-android-lint@v1.0.1
+      - uses: yutailang0119/action-android-lint@v1.0.2
         with:
           xml_path: build/reports/lint-results.xml
 ```
