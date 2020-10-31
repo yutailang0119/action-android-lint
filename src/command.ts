@@ -1,5 +1,5 @@
 import * as command from '@actions/core/lib/command'
-import {Annotation} from './annotation'
+import {Annotation} from './Annotation'
 
 const commandProperties = (annotation: Annotation): {[key: string]: string} => {
   return {
@@ -12,7 +12,7 @@ const commandProperties = (annotation: Annotation): {[key: string]: string} => {
 export async function echoMessages(annotations: Annotation[]): Promise<void> {
   for (const annotation of annotations) {
     command.issueCommand(
-      annotation.level,
+      annotation.severityLevel,
       commandProperties(annotation),
       annotation.message
     )
