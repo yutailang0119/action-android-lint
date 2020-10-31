@@ -12,7 +12,7 @@ const commandProperties = (annotation: Annotation): {[key: string]: string} => {
 export async function echoMessages(annotations: Annotation[]): Promise<void> {
   for (const annotation of annotations) {
     command.issueCommand(
-      annotation.level,
+      annotation.severityLevel,
       commandProperties(annotation),
       annotation.message
     )

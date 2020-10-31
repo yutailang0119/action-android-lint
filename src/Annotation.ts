@@ -1,27 +1,23 @@
+import {AnnotationSeverityLevel} from './AnnotationSeverityLevel'
+
 export class Annotation {
-  level: AnnotationLevel
+  severityLevel: AnnotationSeverityLevel
   path: string
   line: number
   column: number
   message: string
 
   constructor(
-    level: string,
+    severity: string,
     path: string,
     line: number,
     column: number,
     message: string
   ) {
-    this.level =
-      level === 'Warning' ? AnnotationLevel.Warning : AnnotationLevel.Error
+    this.severityLevel = severity === 'Error' ? 'error' : 'warning'
     this.path = path
     this.line = line
     this.column = column
     this.message = message
   }
-}
-
-enum AnnotationLevel {
-  Warning = 'warning',
-  Error = 'error'
 }
