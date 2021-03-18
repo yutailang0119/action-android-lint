@@ -7,7 +7,7 @@ test('test runs', () => {
   process.env['INPUT_XML_PATH'] = path.join(
     __dirname,
     'resource',
-    'sample-lint-results.xml'
+    '*.xml'
   )
   const ip = path.join(__dirname, '..', 'lib', 'main.js')
   const options: cp.ExecSyncOptions = {
