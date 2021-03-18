@@ -8,7 +8,10 @@ import {Annotation} from './Annotation'
 async function run(): Promise<void> {
   try {
     const xmlPath = core.getInput('xml_path', {required: true})
-    const globber = await glob.create(xmlPath)
+    const globOptions = {
+      followSymbolicLinks: core.getInput('follow-symbolic-links').toUpperCase() !== 'FALSE'
+    }
+    const globber = await glob.create(xmlPath, globOptions)
 
     let annotations: Annotation[] = []
     for await (const file of globber.globGenerator()) {
