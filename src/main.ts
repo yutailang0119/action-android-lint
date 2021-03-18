@@ -9,7 +9,8 @@ async function run(): Promise<void> {
   try {
     const xmlPath = core.getInput('xml_path', {required: true})
     const globOptions = {
-      followSymbolicLinks: core.getInput('follow-symbolic-links').toUpperCase() !== 'FALSE'
+      followSymbolicLinks:
+        core.getInput('follow-symbolic-links').toUpperCase() !== 'FALSE'
     }
     const globber = await glob.create(xmlPath, globOptions)
 
