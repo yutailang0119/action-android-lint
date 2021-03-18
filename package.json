@@ -26,6 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6",
+    "@actions/glob": "^0.1.1",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
