@@ -107,13 +107,12 @@ async function run() {
             followSymbolicLinks: core.getInput('follow-symbolic-links').toUpperCase() !== 'FALSE'
         };
         const globber = await glob.create(xmlPath, globOptions);
-        let annotations = [];
-        for await (const file of globber.globGenerator()) {
+        const files = await globber.glob();
+        const annotationsList = await Promise.all(files.map(async (file) => {
             const xml = fs_1.default.readFileSync(file, 'utf-8');
-            const annotation = await parser_1.parseXml(xml);
-            annotations = annotations.concat(annotation);
-        }
-        await command_1.echoMessages(annotations);
+            return await parser_1.parseXml(xml);
+        }));
+        await command_1.echoMessages(annotationsList.flat());
     }
     catch (error) {
         core.setFailed(error.message);
