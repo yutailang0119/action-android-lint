@@ -14,10 +14,12 @@ async function run(): Promise<void> {
     const globber = await glob.create(xmlPath, globOptions)
     const files = await globber.glob()
 
-    const annotationsList = await Promise.all(files.map(async (file) => {
-      const xml = fs.readFileSync(file, 'utf-8')
-      return await parseXml(xml)
-    }))
+    const annotationsList = await Promise.all(
+      files.map(async file => {
+        const xml = fs.readFileSync(file, 'utf-8')
+        return await parseXml(xml)
+      })
+    )
 
     await echoMessages(annotationsList.flat())
   } catch (error) {
