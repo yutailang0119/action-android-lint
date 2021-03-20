@@ -3,7 +3,6 @@ import * as glob from '@actions/glob'
 import fs from 'fs'
 import {parseXml} from './parser'
 import {echoMessages} from './command'
-import {Annotation} from './Annotation'
 
 async function run(): Promise<void> {
   try {
@@ -13,15 +12,14 @@ async function run(): Promise<void> {
         core.getInput('follow-symbolic-links').toUpperCase() !== 'FALSE'
     }
     const globber = await glob.create(xmlPath, globOptions)
+    const files = await globber.glob()
 
-    let annotations: Annotation[] = []
-    for await (const file of globber.globGenerator()) {
+    const annotationsList = await Promise.all(files.map(async (file) => {
       const xml = fs.readFileSync(file, 'utf-8')
-      const annotation = await parseXml(xml)
-      annotations = annotations.concat(annotation)
-    }
+      return await parseXml(xml)
+    }))
 
-    await echoMessages(annotations)
+    await echoMessages(annotationsList.flat())
   } catch (error) {
     core.setFailed(error.message)
   }
