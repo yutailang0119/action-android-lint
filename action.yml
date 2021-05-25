@@ -3,7 +3,7 @@ description: 'A tool to enforce Android style and conventions'
 author: 'Yutaro Muta'
 inputs:
   xml_path:
-    description: 'The file path of the XML lint report produced by gradle'
+    description: 'The file path of the XML lint report produced by gradle. e.g `build/reports/*.xml`'
     required: true
   follow-symbolic-links:
     description: 'Indicates whether to follow symbolic links'
