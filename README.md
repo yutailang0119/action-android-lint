@@ -33,7 +33,7 @@ jobs:
       - run: ./gradlew lint
       - uses: yutailang0119/action-android-lint@v1.0.2
         with:
-          xml_path: build/reports/lint-results.xml
+          xml_path: build/reports/*.xml
 ```
 
 ## Author
