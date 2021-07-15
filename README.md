@@ -31,7 +31,7 @@ jobs:
         with:
           java-version: 1.8
       - run: ./gradlew lint
-      - uses: yutailang0119/action-android-lint@v1.0.2
+      - uses: yutailang0119/action-android-lint@v1.1.0
         with:
           xml_path: build/reports/*.xml
 ```
