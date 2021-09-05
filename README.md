@@ -26,10 +26,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: set up JDK 1.8
-        uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          fetch-depth: 1
+      - name: set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: zulu
+          java-version: 11
+          cache: gradle
       - run: ./gradlew lint
       - uses: yutailang0119/action-android-lint@v1.1.0
         with:
