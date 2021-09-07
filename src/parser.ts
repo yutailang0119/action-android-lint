@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as xml2js from 'xml2js'
 import {Annotation} from './annotation'
 
-export async function parseXml(reportXml: string): Promise<Annotation[]> {
+export const parseXml = async (reportXml: string): Promise<Annotation[]> => {
   const parser = new xml2js.Parser()
   const xml = await parser.parseStringPromise(reportXml)
   return new Promise(resolve => {
@@ -16,10 +16,10 @@ export async function parseXml(reportXml: string): Promise<Annotation[]> {
 
           const annotation = new Annotation(
             issue.severity,
+            `${issue.summary}: ${issue.message}`,
             location.file,
             parseInt(location.line),
-            parseInt(location.column),
-            `${issue.summary}: ${issue.message}`
+            parseInt(location.column)
           )
           annotations.push(annotation)
         }

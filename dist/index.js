@@ -9,12 +9,12 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Annotation = void 0;
 class Annotation {
-    constructor(severity, path, line, column, message) {
-        this.severityLevel = severity === 'Error' ? 'error' : 'warning';
-        this.path = path;
+    constructor(severity, message, file, line, column) {
+        this.message = message;
+        this.file = file;
         this.line = line;
         this.column = column;
-        this.message = message;
+        this.severityLevel = severity === 'error' ? 'error' : 'warning';
     }
 }
 exports.Annotation = Annotation;
@@ -51,16 +51,16 @@ exports.echoMessages = void 0;
 const command = __importStar(__nccwpck_require__(7351));
 const commandProperties = (annotation) => {
     return {
-        file: annotation.path,
+        file: annotation.file,
         line: `${annotation.line}`,
         col: `${annotation.column}`
     };
 };
-async function echoMessages(annotations) {
+const echoMessages = (annotations) => {
     for (const annotation of annotations) {
         command.issueCommand(annotation.severityLevel, commandProperties(annotation), annotation.message);
     }
-}
+};
 exports.echoMessages = echoMessages;
 
 
@@ -111,7 +111,7 @@ async function run() {
             const xml = fs_1.default.readFileSync(file, 'utf-8');
             return await parser_1.parseXml(xml);
         }));
-        await command_1.echoMessages(annotationsList.flat());
+        command_1.echoMessages(annotationsList.flat());
     }
     catch (error) {
         core.setFailed(error.message);
@@ -151,7 +151,7 @@ exports.parseXml = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const xml2js = __importStar(__nccwpck_require__(6189));
 const annotation_1 = __nccwpck_require__(6316);
-async function parseXml(reportXml) {
+const parseXml = async (reportXml) => {
     const parser = new xml2js.Parser();
     const xml = await parser.parseStringPromise(reportXml);
     return new Promise(resolve => {
@@ -161,7 +161,7 @@ async function parseXml(reportXml) {
                 const issue = issueElement.$;
                 for (const locationElement of issueElement.location) {
                     const location = locationElement.$;
-                    const annotation = new annotation_1.Annotation(issue.severity, location.file, parseInt(location.line), parseInt(location.column), `${issue.summary}: ${issue.message}`);
+                    const annotation = new annotation_1.Annotation(issue.severity, `${issue.summary}: ${issue.message}`, location.file, parseInt(location.line), parseInt(location.column));
                     annotations.push(annotation);
                 }
             }
@@ -171,7 +171,7 @@ async function parseXml(reportXml) {
             core.debug(`failed to read ${error}`);
         }
     });
-}
+};
 exports.parseXml = parseXml;
 
 

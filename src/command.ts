@@ -3,13 +3,13 @@ import {Annotation} from './annotation'
 
 const commandProperties = (annotation: Annotation): {[key: string]: string} => {
   return {
-    file: annotation.path,
+    file: annotation.file,
     line: `${annotation.line}`,
     col: `${annotation.column}`
   }
 }
 
-export async function echoMessages(annotations: Annotation[]): Promise<void> {
+export const echoMessages = (annotations: Annotation[]): void => {
   for (const annotation of annotations) {
     command.issueCommand(
       annotation.severityLevel,
