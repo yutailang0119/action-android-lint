@@ -3,7 +3,7 @@ import {Annotation} from './annotation'
 
 const commandProperties = (annotation: Annotation): {[key: string]: string} => {
   return {
-    file: annotation.path,
+    file: annotation.file,
     line: `${annotation.line}`,
     col: `${annotation.column}`
   }
