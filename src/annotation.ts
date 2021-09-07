@@ -1,4 +1,4 @@
-import {AnnotationSeverityLevel} from './AnnotationSeverityLevel'
+import {AnnotationSeverityLevel} from './annotation-severity-level'
 
 export class Annotation {
   severityLevel: AnnotationSeverityLevel

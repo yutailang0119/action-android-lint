@@ -1,7 +1,7 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 7548:
+/***/ 6316:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -150,7 +150,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseXml = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const xml2js = __importStar(__nccwpck_require__(6189));
-const Annotation_1 = __nccwpck_require__(7548);
+const annotation_1 = __nccwpck_require__(6316);
 async function parseXml(reportXml) {
     const parser = new xml2js.Parser();
     const xml = await parser.parseStringPromise(reportXml);
@@ -161,7 +161,7 @@ async function parseXml(reportXml) {
                 const issue = issueElement.$;
                 for (const locationElement of issueElement.location) {
                     const location = locationElement.$;
-                    const annotation = new Annotation_1.Annotation(issue.severity, location.file, parseInt(location.line), parseInt(location.column), `${issue.summary}: ${issue.message}`);
+                    const annotation = new annotation_1.Annotation(issue.severity, location.file, parseInt(location.line), parseInt(location.column), `${issue.summary}: ${issue.message}`);
                     annotations.push(annotation);
                 }
             }

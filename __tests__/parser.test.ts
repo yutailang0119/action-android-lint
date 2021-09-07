@@ -1,5 +1,5 @@
 import {parseXml} from '../src/parser'
-import {Annotation} from '../src/Annotation'
+import {Annotation} from '../src/annotation'
 
 test('test parse', () => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

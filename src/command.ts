@@ -1,5 +1,5 @@
 import * as command from '@actions/core/lib/command'
-import {Annotation} from './Annotation'
+import {Annotation} from './annotation'
 
 const commandProperties = (annotation: Annotation): {[key: string]: string} => {
   return {
