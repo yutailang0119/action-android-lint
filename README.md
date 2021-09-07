@@ -35,7 +35,7 @@ jobs:
           java-version: 11
           cache: gradle
       - run: ./gradlew lint
-      - uses: yutailang0119/action-android-lint@v1.1.0
+      - uses: yutailang0119/action-android-lint@v1
         with:
           xml_path: build/reports/*.xml
 ```
