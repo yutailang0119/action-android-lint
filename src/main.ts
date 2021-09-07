@@ -1,8 +1,8 @@
+import fs from 'fs'
 import * as core from '@actions/core'
 import * as glob from '@actions/glob'
-import fs from 'fs'
-import {parseXml} from './parser'
 import {echoMessages} from './command'
+import {parseXml} from './parser'
 
 async function run(): Promise<void> {
   try {
