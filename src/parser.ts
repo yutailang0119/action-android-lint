@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as xml2js from 'xml2js'
-import {Annotation} from './Annotation'
+import {Annotation} from './annotation'
 
 export async function parseXml(reportXml: string): Promise<Annotation[]> {
   const parser = new xml2js.Parser()
