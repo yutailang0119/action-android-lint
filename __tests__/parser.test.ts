@@ -22,10 +22,10 @@ test('test parse', () => {
   </issues>`
   const annotation = new Annotation(
     'Error',
+    'Ignoring results: The result of `subscribe` is not used',
     'Foo.kt',
     33,
-    44,
-    'Ignoring results: The result of `subscribe` is not used'
+    44
   )
   expect(parseXml(xml)).resolves.toEqual([annotation])
 })
