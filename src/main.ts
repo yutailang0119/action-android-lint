@@ -21,7 +21,7 @@ async function run(): Promise<void> {
       })
     )
 
-    await echoMessages(annotationsList.flat())
+    echoMessages(annotationsList.flat())
   } catch (error) {
     core.setFailed(error.message)
   }
