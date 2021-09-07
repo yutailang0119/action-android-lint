@@ -14,7 +14,7 @@ class Annotation {
         this.file = file;
         this.line = line;
         this.column = column;
-        this.severityLevel = severity === 'error' ? 'error' : 'warning';
+        this.severityLevel = severity === 'Error' ? 'error' : 'warning';
     }
 }
 exports.Annotation = Annotation;

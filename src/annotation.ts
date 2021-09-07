@@ -10,6 +10,6 @@ export class Annotation {
     public line: number,
     public column: number
   ) {
-    this.severityLevel = severity === 'error' ? 'error' : 'warning'
+    this.severityLevel = severity === 'Error' ? 'error' : 'warning'
   }
 }
