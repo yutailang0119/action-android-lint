@@ -37,7 +37,7 @@ jobs:
       - run: ./gradlew lint
       - uses: yutailang0119/action-android-lint@v1
         with:
-          xml_path: build/reports/*.xml
+          xml_path: build/reports/*.xml # Support glob patterns by https://www.npmjs.com/package/@actions/glob
 ```
 
 ## Author
