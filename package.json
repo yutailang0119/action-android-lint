@@ -1,6 +1,6 @@
 {
   "name": "action-android-lint",
-  "version": "0.0.0",
+  "version": "1.1.1",
   "private": true,
   "description": "A tool to enforce Android style and conventions",
   "main": "lib/main.js",
