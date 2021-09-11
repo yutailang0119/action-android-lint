@@ -1,4 +1,4 @@
-name: "build-test"
+name: 'build-test'
 on:
   pull_request:
   push:
@@ -6,26 +6,18 @@ on:
       - main
 
 jobs:
-  test_ci:
+  build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: install
-      run: |
-        npm install
-    - name: lint
-      run: |
-        npm run lint
-    - name: build
-      run: |
-        npm run build
-    - name: test
-      run: |
-        npm run test
-  test_run:
+      - uses: actions/checkout@v2
+      - run: |
+          npm install
+      - run: |
+          npm run all
+  test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: ./
-      with: 
-        xml_path: ${{ github.workspace }}/__tests__/resource/sample-lint-results.xml
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          xml_path: ${{ github.workspace }}/__tests__/resource/sample-lint-results.xml
