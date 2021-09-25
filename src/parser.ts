@@ -1,10 +1,21 @@
+import fs from 'fs'
 import * as core from '@actions/core'
 import * as xml2js from 'xml2js'
 import {Annotation} from './annotation'
 
-export const parseXml = async (reportXml: string): Promise<Annotation[]> => {
+export const parseXmls = async (files: string[]): Promise<Annotation[]> => {
+  const list = await Promise.all(
+    files.map(async file => {
+      const xml = fs.readFileSync(file, 'utf-8')
+      return await parseXml(xml)
+    })
+  )
+  return list.flat()
+}
+
+export const parseXml = async (text: string): Promise<Annotation[]> => {
   const parser = new xml2js.Parser()
-  const xml = await parser.parseStringPromise(reportXml)
+  const xml = await parser.parseStringPromise(text)
   return new Promise(resolve => {
     try {
       const annotations: Annotation[] = []
