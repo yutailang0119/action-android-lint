@@ -90,11 +90,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const fs_1 = __importDefault(__nccwpck_require__(5747));
 const core = __importStar(__nccwpck_require__(2186));
 const glob = __importStar(__nccwpck_require__(8090));
 const command_1 = __nccwpck_require__(524);
@@ -107,11 +103,8 @@ async function run() {
         };
         const globber = await glob.create(xmlPath, globOptions);
         const files = await globber.glob();
-        const annotationsList = await Promise.all(files.map(async (file) => {
-            const xml = fs_1.default.readFileSync(file, 'utf-8');
-            return await parser_1.parseXml(xml);
-        }));
-        command_1.echoMessages(annotationsList.flat());
+        const annotations = await parser_1.parseXmls(files);
+        command_1.echoMessages(annotations);
     }
     catch (error) {
         core.setFailed(error.message);
@@ -146,14 +139,26 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseXml = void 0;
+exports.parseXml = exports.parseXmls = void 0;
+const fs_1 = __importDefault(__nccwpck_require__(5747));
 const core = __importStar(__nccwpck_require__(2186));
 const xml2js = __importStar(__nccwpck_require__(6189));
 const annotation_1 = __nccwpck_require__(6316);
-const parseXml = async (reportXml) => {
+const parseXmls = async (files) => {
+    const list = await Promise.all(files.map(async (file) => {
+        const xml = fs_1.default.readFileSync(file, 'utf-8');
+        return await exports.parseXml(xml);
+    }));
+    return list.flat();
+};
+exports.parseXmls = parseXmls;
+const parseXml = async (text) => {
     const parser = new xml2js.Parser();
-    const xml = await parser.parseStringPromise(reportXml);
+    const xml = await parser.parseStringPromise(text);
     return new Promise(resolve => {
         try {
             const annotations = [];
