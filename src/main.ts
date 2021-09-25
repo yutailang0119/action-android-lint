@@ -1,8 +1,7 @@
-import fs from 'fs'
 import * as core from '@actions/core'
 import * as glob from '@actions/glob'
 import {echoMessages} from './command'
-import {parseXml} from './parser'
+import {parseXmls} from './parser'
 
 async function run(): Promise<void> {
   try {
@@ -14,14 +13,9 @@ async function run(): Promise<void> {
     const globber = await glob.create(xmlPath, globOptions)
     const files = await globber.glob()
 
-    const annotationsList = await Promise.all(
-      files.map(async file => {
-        const xml = fs.readFileSync(file, 'utf-8')
-        return await parseXml(xml)
-      })
-    )
+    const annotations = await parseXmls(files)
 
-    echoMessages(annotationsList.flat())
+    echoMessages(annotations)
   } catch (error) {
     core.setFailed(error.message)
   }
