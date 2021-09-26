@@ -3,7 +3,7 @@ import {Annotation} from '../src/annotation'
 import {parseXmls, parseXml} from '../src/parser'
 
 test('test parseXmls', () => {
-  const file = path.join(__dirname, 'resource', 'sample-lint-results.xml')
+  const file = path.join(__dirname, 'resource', 'lint-results.xml')
 
   const annotation1 = new Annotation(
     'Warning',
