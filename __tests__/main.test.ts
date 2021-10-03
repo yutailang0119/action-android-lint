@@ -9,5 +9,13 @@ test('test runs', () => {
   const options: cp.ExecSyncOptions = {
     env: process.env
   }
-  console.log(cp.execSync(`node ${ip}`, options).toString())
+
+  try {
+    const stdout = cp.execSync(`node ${ip}`, options)
+    console.log(stdout)
+    expect.assertions(1)
+  } catch (err) {
+    console.log('stdout: ', err.stdout.toString())
+    expect(err.status).toEqual(1)
+  }
 })
