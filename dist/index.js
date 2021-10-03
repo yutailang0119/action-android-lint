@@ -105,6 +105,12 @@ async function run() {
         const files = await globber.glob();
         const annotations = await parser_1.parseXmls(files);
         command_1.echoMessages(annotations);
+        const errors = annotations.filter(annotation => {
+            return annotation.severityLevel === 'error';
+        });
+        if (errors.length) {
+            throw Error('There are errors via Android Lint');
+        }
     }
     catch (error) {
         core.setFailed(error.message);
