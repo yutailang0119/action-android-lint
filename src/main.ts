@@ -16,6 +16,13 @@ async function run(): Promise<void> {
     const annotations = await parseXmls(files)
 
     echoMessages(annotations)
+
+    const errors = annotations.filter(annotation => {
+      return annotation.severityLevel === 'error'
+    })
+    if (errors.length) {
+      throw Error('There are errors via Android Lint')
+    }
   } catch (error) {
     core.setFailed(error.message)
   }

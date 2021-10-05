@@ -38,6 +38,7 @@ jobs:
       - uses: yutailang0119/action-android-lint@v1
         with:
           xml_path: build/reports/*.xml # Support glob patterns by https://www.npmjs.com/package/@actions/glob
+        continue-on-error: true # If annotations contain error of severity, action-android-lint exit 1.
 ```
 
 ## Author

@@ -21,3 +21,4 @@ jobs:
       - uses: ./
         with:
           xml_path: ${{ github.workspace }}/__tests__/resource/lint-results.xml
+        continue-on-error: true
