@@ -54,10 +54,10 @@ const core = __importStar(__nccwpck_require__(2186));
 const echoMessages = (annotations) => {
     for (const annotation of annotations) {
         if (annotation.severityLevel === 'error') {
-            core.error(annotation.error, annotation.properties);
+            core.error(annotation.error.message, annotation.properties);
         }
         else {
-            core.warning(annotation.error, annotation.properties);
+            core.warning(annotation.error.message, annotation.properties);
         }
     }
 };
