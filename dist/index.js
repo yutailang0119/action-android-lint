@@ -10,8 +10,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Annotation = void 0;
 class Annotation {
     constructor(severity, message, file, line, column) {
+        this.message = message;
         this.severityLevel = severity === 'Error' ? 'error' : 'warning';
-        this.error = new Error(message);
         this.properties = {
             file,
             startLine: line,
@@ -54,10 +54,10 @@ const core = __importStar(__nccwpck_require__(2186));
 const echoMessages = (annotations) => {
     for (const annotation of annotations) {
         if (annotation.severityLevel === 'error') {
-            core.error(annotation.error.message, annotation.properties);
+            core.error(annotation.message, annotation.properties);
         }
         else {
-            core.warning(annotation.error.message, annotation.properties);
+            core.warning(annotation.message, annotation.properties);
         }
     }
 };
