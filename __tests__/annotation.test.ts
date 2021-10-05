@@ -9,12 +9,16 @@ test('test Annotation.constructor with Warning', () => {
     22
   )
   expect(annotation.severityLevel).toEqual('warning')
-  expect(annotation.message).toEqual(
-    'Useless parent layout: This `RelativeLayout` layout or its `FrameLayout` parent is useless; transfer the `background` attribute to the other view'
+  expect(annotation.error).toEqual(
+    new Error(
+      'Useless parent layout: This `RelativeLayout` layout or its `FrameLayout` parent is useless; transfer the `background` attribute to the other view'
+    )
   )
-  expect(annotation.file).toEqual('layout.xml')
-  expect(annotation.line).toEqual(11)
-  expect(annotation.column).toEqual(22)
+  expect(annotation.properties).toEqual({
+    file: 'layout.xml',
+    startLine: 11,
+    startColumn: 22
+  })
 })
 
 test('test Annotation.constructor with Error', () => {
@@ -26,12 +30,14 @@ test('test Annotation.constructor with Error', () => {
     44
   )
   expect(annotation.severityLevel).toEqual('error')
-  expect(annotation.message).toEqual(
-    'Ignoring results: The result of `subscribe` is not used'
+  expect(annotation.error).toEqual(
+    new Error('Ignoring results: The result of `subscribe` is not used')
   )
-  expect(annotation.file).toEqual('Foo.kt')
-  expect(annotation.line).toEqual(33)
-  expect(annotation.column).toEqual(44)
+  expect(annotation.properties).toEqual({
+    file: 'Foo.kt',
+    startLine: 33,
+    startColumn: 44
+  })
 })
 
 test('test Annotation.constructor with Other', () => {
