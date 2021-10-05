@@ -9,10 +9,8 @@ test('test Annotation.constructor with Warning', () => {
     22
   )
   expect(annotation.severityLevel).toEqual('warning')
-  expect(annotation.error).toEqual(
-    new Error(
-      'Useless parent layout: This `RelativeLayout` layout or its `FrameLayout` parent is useless; transfer the `background` attribute to the other view'
-    )
+  expect(annotation.message).toEqual(
+    'Useless parent layout: This `RelativeLayout` layout or its `FrameLayout` parent is useless; transfer the `background` attribute to the other view'
   )
   expect(annotation.properties).toEqual({
     file: 'layout.xml',
@@ -30,8 +28,8 @@ test('test Annotation.constructor with Error', () => {
     44
   )
   expect(annotation.severityLevel).toEqual('error')
-  expect(annotation.error).toEqual(
-    new Error('Ignoring results: The result of `subscribe` is not used')
+  expect(annotation.message).toEqual(
+    'Ignoring results: The result of `subscribe` is not used'
   )
   expect(annotation.properties).toEqual({
     file: 'Foo.kt',
