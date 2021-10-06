@@ -10,8 +10,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Annotation = void 0;
 class Annotation {
     constructor(severity, message, file, line, column) {
-        this.message = message;
         this.severityLevel = severity === 'Error' ? 'error' : 'warning';
+        this.message = message;
         this.properties = {
             file,
             startLine: line,

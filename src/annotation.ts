@@ -3,16 +3,18 @@ import {AnnotationSeverityLevel} from './annotation-severity-level'
 
 export class Annotation {
   severityLevel: AnnotationSeverityLevel
+  message: string
   properties: AnnotationProperties
 
   constructor(
     severity: string,
-    public message: string,
+    message: string,
     file: string,
     line: number,
     column: number
   ) {
     this.severityLevel = severity === 'Error' ? 'error' : 'warning'
+    this.message = message
     this.properties = {
       file,
       startLine: line,
