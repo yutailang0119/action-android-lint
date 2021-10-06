@@ -11,10 +11,12 @@ exports.Annotation = void 0;
 class Annotation {
     constructor(severity, message, file, line, column) {
         this.message = message;
-        this.file = file;
-        this.line = line;
-        this.column = column;
         this.severityLevel = severity === 'Error' ? 'error' : 'warning';
+        this.properties = {
+            file,
+            startLine: line,
+            startColumn: column
+        };
     }
 }
 exports.Annotation = Annotation;
@@ -48,17 +50,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.echoMessages = void 0;
-const command = __importStar(__nccwpck_require__(7351));
-const commandProperties = (annotation) => {
-    return {
-        file: annotation.file,
-        line: `${annotation.line}`,
-        col: `${annotation.column}`
-    };
-};
+const core = __importStar(__nccwpck_require__(2186));
 const echoMessages = (annotations) => {
     for (const annotation of annotations) {
-        command.issueCommand(annotation.severityLevel, commandProperties(annotation), annotation.message);
+        if (annotation.severityLevel === 'error') {
+            core.error(annotation.message, annotation.properties);
+        }
+        else {
+            core.warning(annotation.message, annotation.properties);
+        }
     }
 };
 exports.echoMessages = echoMessages;
