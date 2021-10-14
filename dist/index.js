@@ -109,7 +109,8 @@ async function run() {
             return annotation.severityLevel === 'error';
         });
         if (errors.length) {
-            throw Error('There are errors via Android Lint');
+            const unit = errors.length === 1 ? 'error' : 'errors';
+            throw Error(`Android Lint with ${errors.length} ${unit}`);
         }
     }
     catch (error) {
