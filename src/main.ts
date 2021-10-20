@@ -25,7 +25,7 @@ async function run(): Promise<void> {
       throw Error(`Android Lint with ${errors.length} ${unit}`)
     }
   } catch (error) {
-    core.setFailed(error.message)
+    if (error instanceof Error) core.setFailed(error.message)
   }
 }
 
