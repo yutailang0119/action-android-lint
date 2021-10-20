@@ -103,8 +103,8 @@ async function run() {
         };
         const globber = await glob.create(xmlPath, globOptions);
         const files = await globber.glob();
-        const annotations = await parser_1.parseXmls(files);
-        command_1.echoMessages(annotations);
+        const annotations = await (0, parser_1.parseXmls)(files);
+        (0, command_1.echoMessages)(annotations);
         const errors = annotations.filter(annotation => {
             return annotation.severityLevel === 'error';
         });
@@ -114,7 +114,8 @@ async function run() {
         }
     }
     catch (error) {
-        core.setFailed(error.message);
+        if (error instanceof Error)
+            core.setFailed(error.message);
     }
 }
 run();
@@ -158,7 +159,7 @@ const annotation_1 = __nccwpck_require__(6316);
 const parseXmls = async (files) => {
     const list = await Promise.all(files.map(async (file) => {
         const xml = fs_1.default.readFileSync(file, 'utf-8');
-        return await exports.parseXml(xml);
+        return await (0, exports.parseXml)(xml);
     }));
     return list.flat();
 };
