@@ -6,13 +6,14 @@ import {expect, test} from '@jest/globals'
 // shows how the runner will run a javascript action with env / stdout protocol
 test('test runs', () => {
   process.env['INPUT_XML_PATH'] = path.join(__dirname, 'resource', '*.xml')
+  const np = process.execPath
   const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecSyncOptions = {
+  const options: cp.ExecFileSyncOptions = {
     env: process.env
   }
 
   try {
-    const stdout = cp.execSync(`node ${ip}`, options)
+    const stdout = cp.execFileSync(np, [ip], options)
     console.log(stdout)
     expect.assertions(1)
   } catch (error: any) {
