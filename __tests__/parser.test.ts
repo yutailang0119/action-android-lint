@@ -1,4 +1,5 @@
 import path from 'path'
+import {expect, test} from '@jest/globals'
 import {Annotation} from '../src/annotation'
 import {parseXmls, parseXml} from '../src/parser'
 
