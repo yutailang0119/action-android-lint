@@ -30,7 +30,6 @@
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
-    "@types/jest": "^27.0.2",
     "@types/node": "^16.11.2",
     "@types/xml2js": "^0.4.9",
     "@typescript-eslint/parser": "^4.33.0",
@@ -39,7 +38,6 @@
     "eslint-plugin-github": "^4.3.2",
     "eslint-plugin-jest": "^25.2.2",
     "jest": "^27.3.1",
-    "jest-circus": "^27.2.5",
     "js-yaml": "^4.1.0",
     "prettier": "2.4.1",
     "ts-jest": "^27.0.7",

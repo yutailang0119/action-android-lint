@@ -1,3 +1,4 @@
+import {expect, test} from '@jest/globals'
 import {Annotation} from '../src/annotation'
 
 test('test Annotation.constructor with Warning', () => {
