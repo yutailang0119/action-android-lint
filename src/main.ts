@@ -5,7 +5,7 @@ import {parseXmls} from './parser'
 
 async function run(): Promise<void> {
   try {
-    const xmlPath = core.getInput('xml_path', {required: true})
+    const xmlPath = core.getInput('xml-path', {required: true})
     const globOptions = {
       followSymbolicLinks: core.getBooleanInput('follow-symbolic-links')
     }
