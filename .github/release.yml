@@ -1,0 +1,14 @@
+changelog:
+  categories:
+    - title: Breaking Changes ⚠️
+      labels:
+        - breaking change
+    - title: Other Changes 🛠
+      labels:
+        - "*"
+      exclude:
+        labels:
+          - dependencies
+    - title: Dependencies 📦
+      labels:
+        - dependencies
