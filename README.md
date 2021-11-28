@@ -22,7 +22,7 @@ on:
       - gradlew*
 
 jobs:
-  android_lint:
+  android-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
