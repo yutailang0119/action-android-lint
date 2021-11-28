@@ -1,8 +1,8 @@
 {
   "name": "action-android-lint",
   "version": "2.0.0",
-  "private": true,
-  "description": "A tool to enforce Android style and conventions",
+  "private": false,
+  "description": "GitHub Actions for Android style and conventions",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -19,10 +19,10 @@
   },
   "keywords": [
     "actions",
-    "node",
-    "setup"
+    "android",
+    "lint"
   ],
-  "author": "Yutaro Muta",
+  "author": "yutailang0119",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.6.0",
