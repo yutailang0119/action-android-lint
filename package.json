@@ -1,6 +1,6 @@
 {
   "name": "action-android-lint",
-  "version": "2.1.0",
+  "version": "2.0.0",
   "private": false,
   "description": "GitHub Actions for Android style and conventions",
   "main": "lib/main.js",
