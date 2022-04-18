@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@types/node": "^17.0.24",
-    "@types/xml2js": "^0.4.9",
+    "@types/xml2js": "^0.4.11",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
     "@vercel/ncc": "^0.33.3",
