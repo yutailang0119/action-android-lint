@@ -36,6 +36,8 @@ class LintReporter {
       const name = 'ThisIsAName'
 
       core.info(`Creating check run: ${name}`)
+      core.warning(`Warning Test: Creating check run: ${name}`)
+      core.error(`Error Test: Creating check run: ${name}`)
 
       const createResp = await this.octokit.checks.create({
         head_sha: this.context.sha,
