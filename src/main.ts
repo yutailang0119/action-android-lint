@@ -48,7 +48,7 @@ class LintReporter {
         ...github.context.repo
       })
 
-      const annotations = await parseXmls(files)
+      // const annotations = await parseXmls(files)
       const lintIssues = await parseLintXmls(files)
       const conclusion = 'success'
 
