@@ -35,7 +35,7 @@ class LintReporter {
 
       const name = 'ThisIsAName'
 
-      core.debug(`Creating check run: ${name}`)
+      core.info(`Creating check run: ${name}`)
 
       const createResp = await this.octokit.checks.create({
         head_sha: this.context.sha,
@@ -64,9 +64,9 @@ class LintReporter {
         ...github.context.repo
       })
 
-      core.debug(`Check run create response: ${resp.status}`)
-      core.debug(`Check run URL: ${resp.data.url}`)
-      core.debug(`Check run HTML: ${resp.data.html_url}`)
+      core.info(`Check run create response: ${resp.status}`)
+      core.info(`Check run URL: ${resp.data.url}`)
+      core.info(`Check run HTML: ${resp.data.html_url}`)
 
       // echoMessages(annotations)
       //
