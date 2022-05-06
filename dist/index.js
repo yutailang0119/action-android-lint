@@ -375,6 +375,7 @@ function getLintIssuesReport(lintIssues) {
                             if (idI.errorLine2) {
                                 idTables.push(`${idI.errorLine2}`);
                             }
+                            idTables.push('```');
                         }
                     }
                 }

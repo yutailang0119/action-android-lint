@@ -103,6 +103,7 @@ function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
               if (idI.errorLine2) {
                 idTables.push(`${idI.errorLine2}`)
               }
+              idTables.push('```')
             }
           }
         }
