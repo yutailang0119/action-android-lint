@@ -83,9 +83,11 @@ function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
         const idRows = categoryData.filter(cd => cd.id === id)
         const count = idRows.length
         if (count > 0 && idRows && idData) {
+          const headerLink = getHeaderLink(id, idData.summary)
+          core.info(`Header link = ${headerLink}`)
           categorySummaryRows.push([
             count.toString(),
-            getHeaderLink(id, idData.summary),
+            headerLink,
             idData.summary
           ])
           idTables.push(`## ${idData.summary}`)
