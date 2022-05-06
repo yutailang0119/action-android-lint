@@ -8,6 +8,10 @@ inputs:
   follow-symbolic-links:
     description: 'Indicates whether to follow symbolic links'
     default: true
+  token:
+    description: GitHub Access Token
+    required: false
+    default: ${{ github.token }}
 runs:
   using: 'node16'
   main: 'dist/index.js'
