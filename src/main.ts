@@ -64,7 +64,7 @@ class LintReporter {
         output: {
           title: `Some title, yo`,
           summary,
-          annotations: null
+          annotations: []
         },
         ...github.context.repo
       })
