@@ -66,7 +66,6 @@ class LintReporter {
                 },
                 ...github.context.repo
             });
-            core.info(`Contents of repo: ${JSON.stringify(github.context.repo)}`);
             const lintIssues = await parser_1.parseLintXmls(files);
             const summary = lint_report_1.buildLintReportMarkdown(lintIssues);
             const conclusion = 'success';
@@ -327,7 +326,7 @@ function getLintIssuesReport(lintIssues) {
     return sections;
 }
 function getHeaderLink(text, header) {
-    return markdown_utils_1.link(text, `#${header.replace(' ', '-')}`);
+    return markdown_utils_1.link(text, `#${header.replace(/\s+/g, '-')}`);
 }
 function getLintReportBadge(lintIssues) {
     const informational = lintIssues.reduce((sum, li) => sum + (li.severity === 'Information' ? 1 : 0), 0);

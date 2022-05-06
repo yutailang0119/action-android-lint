@@ -48,8 +48,6 @@ class LintReporter {
         ...github.context.repo
       })
 
-      core.info(`Contents of repo: ${JSON.stringify(github.context.repo)}`)
-
       const lintIssues = await parseLintXmls(files)
       const summary = buildLintReportMarkdown(lintIssues)
       const conclusion = 'success'

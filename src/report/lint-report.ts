@@ -124,7 +124,7 @@ function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
 }
 
 function getHeaderLink(text: string, header: string): string {
-  return link(text, `#${header.replace(' ', '-')}`)
+  return link(text, `#${header.replace(/\s+/g, '-')}`)
 }
 
 function getLintReportBadge(lintIssues: LintIssue[]): string {
