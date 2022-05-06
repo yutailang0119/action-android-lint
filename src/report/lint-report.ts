@@ -96,7 +96,7 @@ function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
           }
           for (const idI of idRows) {
             idTables.push('---')
-            idTables.push(`${idI.file}:${idI.line}:${idI.message}`)
+            idTables.push(`${idI.file}:${idI.line}: ${idI.message}`)
             if (idI.errorLine1) {
               idTables.push('```java')
               idTables.push(`${idI.errorLine1}`)

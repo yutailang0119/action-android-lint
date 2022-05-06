@@ -1,12 +1,10 @@
 import * as core from '@actions/core'
 import * as glob from '@actions/glob'
 import * as github from '@actions/github'
-// import {echoMessages} from './command'
 import {parseLintXmls /*, parseXmls*/} from './parser'
 import {GitHub} from '@actions/github/lib/utils'
-// import {getCheckRunContext} from './utils/github-utils'
 import {EventPayloads} from '@octokit/webhooks'
-import { getLintReport } from "./report/lint-report";
+import {getLintReport} from './report/lint-report'
 
 async function main(): Promise<void> {
   try {
@@ -35,7 +33,7 @@ class LintReporter {
       const globber = await glob.create(reportPath, globOptions)
       const files = await globber.glob()
 
-      const name = 'ThisIsAName'
+      const name = 'AndroidLintResults'
 
       core.info(`Creating check run: ${name}`)
 
@@ -50,7 +48,6 @@ class LintReporter {
         ...github.context.repo
       })
 
-      // const annotations = await parseXmls(files)
       const lintIssues = await parseLintXmls(files)
       const summary = getLintReport(lintIssues)
       const conclusion = 'success'
@@ -72,16 +69,6 @@ class LintReporter {
       core.info(`Check run create response: ${resp.status}`)
       core.info(`Check run URL: ${resp.data.url}`)
       core.info(`Check run HTML: ${resp.data.html_url}`)
-
-      // echoMessages(annotations)
-      //
-      // const errors = annotations.filter(annotation => {
-      //   return annotation.severityLevel === 'error'
-      // })
-      // if (errors.length) {
-      //   const unit = errors.length === 1 ? 'error' : 'errors'
-      //   throw Error(`Android Lint with ${errors.length} ${unit}`)
-      // }
     } catch (error) {
       if (error instanceof Error) core.setFailed(error.message)
     }

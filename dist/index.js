@@ -1,29 +1,6 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 6316:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Annotation = void 0;
-class Annotation {
-    constructor(severity, message, file, line, column) {
-        this.severityLevel = severity === 'Error' ? 'error' : 'warning';
-        this.message = message;
-        this.properties = {
-            file,
-            startLine: line,
-            startColumn: column
-        };
-    }
-}
-exports.Annotation = Annotation;
-
-
-/***/ }),
-
 /***/ 3109:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -52,7 +29,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const glob = __importStar(__nccwpck_require__(8090));
 const github = __importStar(__nccwpck_require__(5438));
-// import {echoMessages} from './command'
 const parser_1 = __nccwpck_require__(267);
 const lint_report_1 = __nccwpck_require__(6784);
 async function main() {
@@ -78,7 +54,7 @@ class LintReporter {
             };
             const globber = await glob.create(reportPath, globOptions);
             const files = await globber.glob();
-            const name = 'ThisIsAName';
+            const name = 'AndroidLintResults';
             core.info(`Creating check run: ${name}`);
             const createResp = await this.octokit.checks.create({
                 head_sha: this.context.sha,
@@ -90,7 +66,6 @@ class LintReporter {
                 },
                 ...github.context.repo
             });
-            // const annotations = await parseXmls(files)
             const lintIssues = await parser_1.parseLintXmls(files);
             const summary = lint_report_1.getLintReport(lintIssues);
             const conclusion = 'success';
@@ -109,15 +84,6 @@ class LintReporter {
             core.info(`Check run create response: ${resp.status}`);
             core.info(`Check run URL: ${resp.data.url}`);
             core.info(`Check run HTML: ${resp.data.html_url}`);
-            // echoMessages(annotations)
-            //
-            // const errors = annotations.filter(annotation => {
-            //   return annotation.severityLevel === 'error'
-            // })
-            // if (errors.length) {
-            //   const unit = errors.length === 1 ? 'error' : 'errors'
-            //   throw Error(`Android Lint with ${errors.length} ${unit}`)
-            // }
         }
         catch (error) {
             if (error instanceof Error)
@@ -180,19 +146,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.parseLintXml = exports.parseXml = exports.parseLintXmls = exports.parseXmls = void 0;
+exports.parseLintXml = exports.parseLintXmls = void 0;
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const core = __importStar(__nccwpck_require__(2186));
 const xml2js = __importStar(__nccwpck_require__(6189));
-const annotation_1 = __nccwpck_require__(6316);
-const parseXmls = async (files) => {
-    const list = await Promise.all(files.map(async (file) => {
-        const xml = fs_1.default.readFileSync(file, 'utf-8');
-        return await exports.parseXml(xml);
-    }));
-    return list.flat();
-};
-exports.parseXmls = parseXmls;
 const parseLintXmls = async (files) => {
     const list = await Promise.all(files.map(async (file) => {
         const xml = fs_1.default.readFileSync(file, 'utf-8');
@@ -201,28 +158,6 @@ const parseLintXmls = async (files) => {
     return list.flat();
 };
 exports.parseLintXmls = parseLintXmls;
-const parseXml = async (text) => {
-    const parser = new xml2js.Parser();
-    const xml = await parser.parseStringPromise(text);
-    return new Promise(resolve => {
-        try {
-            const annotations = [];
-            for (const issueElement of xml.issues.issue) {
-                const issue = issueElement.$;
-                for (const locationElement of issueElement.location) {
-                    const location = locationElement.$;
-                    const annotation = new annotation_1.Annotation(issue.severity, `${issue.summary}: ${issue.message}`, location.file, parseInt(location.line), parseInt(location.column));
-                    annotations.push(annotation);
-                }
-            }
-            resolve(annotations);
-        }
-        catch (error) {
-            core.debug(`failed to read ${error}`);
-        }
-    });
-};
-exports.parseXml = parseXml;
 const parseLintXml = async (text) => {
     const parser = new xml2js.Parser();
     const xml = await parser.parseStringPromise(text);
@@ -368,7 +303,7 @@ function getLintIssuesReport(lintIssues) {
                     }
                     for (const idI of idRows) {
                         idTables.push('---');
-                        idTables.push(`${idI.file}:${idI.line}:${idI.message}`);
+                        idTables.push(`${idI.file}:${idI.line}: ${idI.message}`);
                         if (idI.errorLine1) {
                             idTables.push('```java');
                             idTables.push(`${idI.errorLine1}`);
