@@ -4,7 +4,7 @@ import {Align, link, table} from '../utils/markdown_utils'
 
 const MAX_REPORT_LENGTH = 65535
 
-export function getLintReport(lintIssues: LintIssue[]): string {
+export function buildLintReportMarkdown(lintIssues: LintIssue[]): string {
   core.info('Generating lint analysis summary')
 
   const lines = renderLintReport(lintIssues)

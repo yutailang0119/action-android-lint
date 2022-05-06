@@ -4,7 +4,7 @@ import * as github from '@actions/github'
 import {parseLintXmls /*, parseXmls*/} from './parser'
 import {GitHub} from '@actions/github/lib/utils'
 import {EventPayloads} from '@octokit/webhooks'
-import {getLintReport} from './report/lint-report'
+import {buildLintReportMarkdown} from './report/lint-report'
 
 async function main(): Promise<void> {
   try {
@@ -48,8 +48,10 @@ class LintReporter {
         ...github.context.repo
       })
 
+      core.info(`Contents of repo: ${JSON.stringify(github.context.repo)}`)
+
       const lintIssues = await parseLintXmls(files)
-      const summary = getLintReport(lintIssues)
+      const summary = buildLintReportMarkdown(lintIssues)
       const conclusion = 'success'
 
       core.info(`Updating check run: ${name}`)

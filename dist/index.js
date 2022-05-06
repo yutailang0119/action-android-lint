@@ -66,8 +66,9 @@ class LintReporter {
                 },
                 ...github.context.repo
             });
+            core.info(`Contents of repo: ${JSON.stringify(github.context.repo)}`);
             const lintIssues = await parser_1.parseLintXmls(files);
-            const summary = lint_report_1.getLintReport(lintIssues);
+            const summary = lint_report_1.buildLintReportMarkdown(lintIssues);
             const conclusion = 'success';
             core.info(`Updating check run: ${name}`);
             const resp = await this.octokit.checks.update({
@@ -224,11 +225,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getLintReport = void 0;
+exports.buildLintReportMarkdown = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const markdown_utils_1 = __nccwpck_require__(6988);
 const MAX_REPORT_LENGTH = 65535;
-function getLintReport(lintIssues) {
+function buildLintReportMarkdown(lintIssues) {
     core.info('Generating lint analysis summary');
     const lines = renderLintReport(lintIssues);
     const report = lines.join('\n');
@@ -238,7 +239,7 @@ function getLintReport(lintIssues) {
     core.warning(`Lint report summary exceeded limit of ${MAX_REPORT_LENGTH} bytes and will be trimmed`);
     return trimReport(lines);
 }
-exports.getLintReport = getLintReport;
+exports.buildLintReportMarkdown = buildLintReportMarkdown;
 function trimReport(lines) {
     const closingBlock = '```';
     const errorMsg = `**Report exceeded GitHub limit of ${MAX_REPORT_LENGTH} bytes and has been trimmed**`;
