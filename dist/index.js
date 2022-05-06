@@ -326,7 +326,7 @@ function getLintIssuesReport(lintIssues) {
     return sections;
 }
 function getHeaderLink(text, header) {
-    return markdown_utils_1.link(text, `#${header.replace(/\s+/g, '-')}`);
+    return markdown_utils_1.link(text, `#${header.replace(/\s+/g, '-').toLowerCase()}`);
 }
 function getLintReportBadges(lintIssues) {
     const informational = lintIssues.reduce((sum, li) => sum + (li.severity === 'Information' ? 1 : 0), 0);
