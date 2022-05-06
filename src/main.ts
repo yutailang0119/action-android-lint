@@ -6,6 +6,7 @@ import {parseLintXmls /*, parseXmls*/} from './parser'
 import {GitHub} from '@actions/github/lib/utils'
 // import {getCheckRunContext} from './utils/github-utils'
 import {EventPayloads} from '@octokit/webhooks'
+import { getLintReport } from "./report/lint-report";
 
 async function main(): Promise<void> {
   try {
@@ -37,8 +38,6 @@ class LintReporter {
       const name = 'ThisIsAName'
 
       core.info(`Creating check run: ${name}`)
-      core.warning(`Warning Test: Creating check run: ${name}`)
-      core.error(`Error Test: Creating check run: ${name}`)
 
       const createResp = await this.octokit.checks.create({
         head_sha: this.context.sha,
@@ -53,7 +52,10 @@ class LintReporter {
 
       // const annotations = await parseXmls(files)
       const lintIssues = await parseLintXmls(files)
+      const summary = getLintReport(lintIssues)
       const conclusion = 'success'
+
+      core.info(`Updating check run: ${name}`)
 
       const resp = await this.octokit.checks.update({
         check_run_id: createResp.data.id,
@@ -61,7 +63,7 @@ class LintReporter {
         status: 'completed',
         output: {
           title: `Some title, yo`,
-          summary: lintIssues,
+          summary,
           annotations: null
         },
         ...github.context.repo

@@ -54,6 +54,7 @@ const glob = __importStar(__nccwpck_require__(8090));
 const github = __importStar(__nccwpck_require__(5438));
 // import {echoMessages} from './command'
 const parser_1 = __nccwpck_require__(267);
+const lint_report_1 = __nccwpck_require__(6784);
 async function main() {
     try {
         const lintReporter = new LintReporter();
@@ -79,8 +80,6 @@ class LintReporter {
             const files = await globber.glob();
             const name = 'ThisIsAName';
             core.info(`Creating check run: ${name}`);
-            core.warning(`Warning Test: Creating check run: ${name}`);
-            core.error(`Error Test: Creating check run: ${name}`);
             const createResp = await this.octokit.checks.create({
                 head_sha: this.context.sha,
                 name,
@@ -93,14 +92,16 @@ class LintReporter {
             });
             // const annotations = await parseXmls(files)
             const lintIssues = await parser_1.parseLintXmls(files);
+            const summary = lint_report_1.getLintReport(lintIssues);
             const conclusion = 'success';
+            core.info(`Updating check run: ${name}`);
             const resp = await this.octokit.checks.update({
                 check_run_id: createResp.data.id,
                 conclusion,
                 status: 'completed',
                 output: {
                     title: `Some title, yo`,
-                    summary: lintIssues,
+                    summary,
                     annotations: null
                 },
                 ...github.context.repo
@@ -259,6 +260,225 @@ const parseLintXml = async (text) => {
     });
 };
 exports.parseLintXml = parseLintXml;
+
+
+/***/ }),
+
+/***/ 6784:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getLintReport = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const markdown_utils_1 = __nccwpck_require__(6988);
+const MAX_REPORT_LENGTH = 65535;
+function getLintReport(lintIssues) {
+    core.info('Generating lint analysis summary');
+    const lines = renderLintReport(lintIssues);
+    const report = lines.join('\n');
+    if (getByteLength(report) <= MAX_REPORT_LENGTH) {
+        return report;
+    }
+    core.warning(`Lint report summary exceeded limit of ${MAX_REPORT_LENGTH} bytes and will be trimmed`);
+    return trimReport(lines);
+}
+exports.getLintReport = getLintReport;
+function trimReport(lines) {
+    const closingBlock = '```';
+    const errorMsg = `**Report exceeded GitHub limit of ${MAX_REPORT_LENGTH} bytes and has been trimmed**`;
+    const maxErrorMsgLength = closingBlock.length + errorMsg.length + 2;
+    const maxReportLength = MAX_REPORT_LENGTH - maxErrorMsgLength;
+    let reportLength = 0;
+    let codeBlock = false;
+    let endLineIndex = 0;
+    for (endLineIndex = 0; endLineIndex < lines.length; endLineIndex++) {
+        const line = lines[endLineIndex];
+        const lineLength = getByteLength(line);
+        reportLength += lineLength + 1;
+        if (reportLength > maxReportLength) {
+            break;
+        }
+        if (line === '```') {
+            codeBlock = !codeBlock;
+        }
+    }
+    const reportLines = lines.slice(0, endLineIndex);
+    if (codeBlock) {
+        reportLines.push('```');
+    }
+    reportLines.push(errorMsg);
+    return reportLines.join('\n');
+}
+function renderLintReport(lintIssues) {
+    const sections = [];
+    const badge = getLintReportBadge(lintIssues);
+    sections.push(badge);
+    sections.push('# Android Lint Results\n\n');
+    const issues = getLintIssuesReport(lintIssues);
+    sections.push(...issues);
+    return sections;
+}
+function getLintIssuesReport(lintIssues) {
+    const sections = [];
+    sections.push('## Summary\n\n');
+    if (lintIssues.length > 1) {
+        const categories = [...new Set(lintIssues.map(li => li.category))];
+        const idTables = [];
+        for (const cat of categories) {
+            sections.push(`### ${cat}`);
+            const categoryData = lintIssues.filter(li => li.category === cat);
+            const ids = [...new Set(categoryData.map(li => li.id))];
+            const categorySummaryRows = [];
+            for (const id of ids) {
+                const idData = categoryData.find(cd => cd.id === id);
+                const idRows = categoryData.filter(cd => cd.id === id);
+                const count = idRows.length;
+                if (count > 0 && idRows && idData) {
+                    categorySummaryRows.push([
+                        count.toString(),
+                        getHeaderLink(id, idData.summary),
+                        idData.summary
+                    ]);
+                    idTables.push(`## ${idData.summary}`);
+                    idTables.push(`### Explanation`);
+                    idTables.push(`${idData.explanation}`);
+                    if (idData.url && idData.urls) {
+                        idTables.push(`More Info: ${markdown_utils_1.link(idData.url, idData.urls)}`);
+                    }
+                    for (const idI of idRows) {
+                        idTables.push('---');
+                        idTables.push(`${idI.file}:${idI.line}:${idI.message}`);
+                        if (idI.errorLine1) {
+                            idTables.push('```java');
+                            idTables.push(`${idI.errorLine1}`);
+                            if (idI.errorLine2) {
+                                idTables.push(`${idI.errorLine2}`);
+                            }
+                        }
+                    }
+                }
+            }
+            const catTable = markdown_utils_1.table(['Count', 'Id', 'Summary'], [markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Left], ...categorySummaryRows);
+            sections.push(catTable);
+            sections.push(idTables.join('\n'));
+        }
+    }
+    else {
+        sections.push('Congratulations! No lint issues found!');
+    }
+    return sections;
+}
+function getHeaderLink(text, header) {
+    return markdown_utils_1.link(text, `#${header.replace(' ', '-')}`);
+}
+function getLintReportBadge(lintIssues) {
+    const informational = lintIssues.reduce((sum, li) => sum + (li.severity === 'Information' ? 1 : 0), 0);
+    const warnings = lintIssues.reduce((sum, li) => sum + (li.severity === 'Warning' ? 1 : 0), 0);
+    const errors = lintIssues.reduce((sum, li) => sum + (li.severity === 'Error' ? 1 : 0), 0);
+    const fatals = lintIssues.reduce((sum, li) => sum + (li.severity === 'Fatal' ? 1 : 0), 0);
+    return getBadge(informational, warnings, errors, fatals);
+}
+function getBadge(informational, warnings, errors, fatalities) {
+    const text = [];
+    if (informational > 0) {
+        text.push(`${informational} informational issues`);
+    }
+    if (warnings > 0) {
+        text.push(`${warnings} warnings`);
+    }
+    if (errors > 0) {
+        text.push(`${errors} errors`);
+    }
+    if (fatalities > 0) {
+        text.push(`${fatalities} fatal issues`);
+    }
+    const message = text.length > 0 ? text.join(', ') : 'none';
+    let color = 'success';
+    if (errors > 0 || fatalities > 0) {
+        color = 'critical';
+    }
+    else if (warnings > 0) {
+        color = 'yellow';
+    }
+    const hint = errors > 0 || fatalities > 0 ? 'Lint errors found' : 'Lint scan successful';
+    const uri = encodeURIComponent(`LintResults-${message}-${color}`);
+    return `![${hint}](https://img.shields.io/badge/${uri})`;
+}
+function getByteLength(text) {
+    return Buffer.byteLength(text, 'utf8');
+}
+
+
+/***/ }),
+
+/***/ 6988:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ellipsis = exports.fixEol = exports.tableEscape = exports.table = exports.link = exports.Icon = exports.Align = void 0;
+// eslint-disable-next-line filenames/match-regex
+var Align;
+(function (Align) {
+    Align["Left"] = ":---";
+    Align["Center"] = ":---:";
+    Align["Right"] = "---:";
+    Align["Home"] = "---";
+})(Align = exports.Align || (exports.Align = {}));
+exports.Icon = {
+    informational: ':information_source:',
+    warning: ':warning:',
+    error: ':bangbang:',
+    fatal: ':rotating_light:'
+};
+function link(title, address) {
+    return `[${title}](${address})`;
+}
+exports.link = link;
+function table(headers, align, ...rows) {
+    const headerRow = `|${headers.map(tableEscape).join('|')}|`;
+    const alignRow = `|${align.join('|')}|`;
+    const contentRows = rows.map(row => `|${row.map(tableEscape).join('|')}|`).join('\n');
+    return [headerRow, alignRow, contentRows].join('\n');
+}
+exports.table = table;
+function tableEscape(content) {
+    return content.toString().replace('|', '\\|');
+}
+exports.tableEscape = tableEscape;
+function fixEol(text) {
+    return text?.replace(/\r/g, '') ?? '';
+}
+exports.fixEol = fixEol;
+function ellipsis(text, maxLength) {
+    if (text.length <= maxLength) {
+        return text;
+    }
+    return `${text.substr(0, maxLength - 3)}...`;
+}
+exports.ellipsis = ellipsis;
 
 
 /***/ }),
