@@ -341,23 +341,22 @@ function getBadges(informational, warnings, errors, fatalities) {
     const warningColor = 'yellow';
     const errorColor = 'important';
     const fatalColor = 'critical';
-    // const hint = errors > 0 || fatalities > 0 ? 'Lint errors found' : 'Lint scan successful'
     let uri = '';
     if (informational > 0) {
         uri = encodeURIComponent(`Informational-${informational}-${infoColor}`);
-        badges.push(`\`![Informational lint issues](https://img.shields.io/badge/${uri})\``);
+        badges.push(`![Informational lint issues](https://img.shields.io/badge/${uri})`);
     }
     if (warnings > 0) {
         uri = encodeURIComponent(`Warnings-${warnings}-${warningColor}`);
-        badges.push(`\`![Warning lint issues](https://img.shields.io/badge/${uri})\``);
+        badges.push(`![Warning lint issues](https://img.shields.io/badge/${uri})`);
     }
     if (errors > 0) {
         uri = encodeURIComponent(`Errors-${errors}-${errorColor}`);
-        badges.push(`\`![Error lint issues](https://img.shields.io/badge/${uri})\``);
+        badges.push(`![Error lint issues](https://img.shields.io/badge/${uri})`);
     }
     if (fatalities > 0) {
         uri = encodeURIComponent(`Fatal-${fatalities}-${fatalColor}`);
-        badges.push(`\`![Fatal lint issues](https://img.shields.io/badge/${uri})\``);
+        badges.push(`![Fatal lint issues](https://img.shields.io/badge/${uri})`);
     }
     return badges;
 }
