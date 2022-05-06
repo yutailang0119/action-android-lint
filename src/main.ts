@@ -62,7 +62,7 @@ class LintReporter {
         conclusion,
         status: 'completed',
         output: {
-          title: `Some title, yo`,
+          title: '',
           summary,
           annotations: []
         },

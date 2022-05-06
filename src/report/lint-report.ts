@@ -54,10 +54,10 @@ function trimReport(lines: string[]): string {
 function renderLintReport(lintIssues: LintIssue[]): string[] {
   const sections: string[] = []
 
+  sections.push('# Android Lint Results\n\n')
+
   const badge = getLintReportBadge(lintIssues)
   sections.push(badge)
-
-  sections.push('# Android Lint Results\n\n')
 
   const issues = getLintIssuesReport(lintIssues)
   sections.push(...issues)

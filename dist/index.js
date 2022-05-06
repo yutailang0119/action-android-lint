@@ -100,7 +100,7 @@ class LintReporter {
                 conclusion,
                 status: 'completed',
                 output: {
-                    title: `Some title, yo`,
+                    title: '',
                     summary,
                     annotations: []
                 },
@@ -332,9 +332,9 @@ function trimReport(lines) {
 }
 function renderLintReport(lintIssues) {
     const sections = [];
+    sections.push('# Android Lint Results\n\n');
     const badge = getLintReportBadge(lintIssues);
     sections.push(badge);
-    sections.push('# Android Lint Results\n\n');
     const issues = getLintIssuesReport(lintIssues);
     sections.push(...issues);
     return sections;
