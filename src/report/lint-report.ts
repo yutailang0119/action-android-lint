@@ -56,8 +56,8 @@ function renderLintReport(lintIssues: LintIssue[]): string[] {
 
   sections.push('# Android Lint Results\n\n')
 
-  const badge = getLintReportBadge(lintIssues)
-  sections.push(badge)
+  const badges = getLintReportBadges(lintIssues)
+  sections.push(...badges)
 
   const issues = getLintIssuesReport(lintIssues)
   sections.push(...issues)
@@ -127,7 +127,7 @@ function getHeaderLink(text: string, header: string): string {
   return link(text, `#${header.replace(/\s+/g, '-')}`)
 }
 
-function getLintReportBadge(lintIssues: LintIssue[]): string {
+function getLintReportBadges(lintIssues: LintIssue[]): string[] {
   const informational = lintIssues.reduce(
     (sum, li) => sum + (li.severity === 'Information' ? 1 : 0),
     0
@@ -144,40 +144,40 @@ function getLintReportBadge(lintIssues: LintIssue[]): string {
     (sum, li) => sum + (li.severity === 'Fatal' ? 1 : 0),
     0
   )
-  return getBadge(informational, warnings, errors, fatals)
+  return getBadges(informational, warnings, errors, fatals)
 }
 
-function getBadge(
+function getBadges(
   informational: number,
   warnings: number,
   errors: number,
   fatalities: number
-): string {
-  const text = []
+): string[] {
+  const badges = []
+  const infoColor = 'informational'
+  const warningColor = 'yellow'
+  const errorColor = 'important'
+  const fatalColor = 'critical'
+  // const hint = errors > 0 || fatalities > 0 ? 'Lint errors found' : 'Lint scan successful'
+  let uri = ''
   if (informational > 0) {
-    text.push(`${informational} informational issues`)
+    uri = encodeURIComponent(`Informational-${informational}-${infoColor}`)
+    badges.push(`\`![Informational lint issues](https://img.shields.io/badge/${uri})\``)
   }
   if (warnings > 0) {
-    text.push(`${warnings} warnings`)
+    uri = encodeURIComponent(`Warnings-${warnings}-${warningColor}`)
+    badges.push(`\`![Warning lint issues](https://img.shields.io/badge/${uri})\``)
   }
   if (errors > 0) {
-    text.push(`${errors} errors`)
+    uri = encodeURIComponent(`Errors-${errors}-${errorColor}`)
+    badges.push(`\`![Error lint issues](https://img.shields.io/badge/${uri})\``)
   }
   if (fatalities > 0) {
-    text.push(`${fatalities} fatal issues`)
+    uri = encodeURIComponent(`Fatal-${fatalities}-${fatalColor}`)
+    badges.push(`\`![Fatal lint issues](https://img.shields.io/badge/${uri})\``)
   }
-  const message = text.length > 0 ? text.join(', ') : 'none'
 
-  let color = 'success'
-  if (errors > 0 || fatalities > 0) {
-    color = 'critical'
-  } else if (warnings > 0) {
-    color = 'yellow'
-  }
-  const hint =
-    errors > 0 || fatalities > 0 ? 'Lint errors found' : 'Lint scan successful'
-  const uri = encodeURIComponent(`LintResults-${message}-${color}`)
-  return `![${hint}](https://img.shields.io/badge/${uri})`
+  return badges
 }
 
 function getByteLength(text: string): number {
