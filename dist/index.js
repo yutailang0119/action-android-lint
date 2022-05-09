@@ -172,27 +172,29 @@ const parseLintXml = async (text) => {
     return new Promise(resolve => {
         try {
             const lintIssues = [];
-            for (const issueElement of xml.issues.issue) {
-                const issue = issueElement.$;
-                for (const locationElement of issueElement.location) {
-                    const location = locationElement.$;
-                    const lintIssue = {
-                        id: issue.id,
-                        severity: issue.severity,
-                        message: issue.message,
-                        category: issue.category,
-                        priority: parseInt(issue.priority),
-                        summary: issue.summary,
-                        explanation: issue.explanation,
-                        errorLine1: issue.errorLine1,
-                        errorLine2: issue.errorLine2,
-                        url: issue.url ?? undefined,
-                        urls: issue.urls ?? undefined,
-                        file: location.file,
-                        line: parseInt(location.line),
-                        column: parseInt(location.column)
-                    };
-                    lintIssues.push(lintIssue);
+            if (xml.issues.issue) {
+                for (const issueElement of xml.issues.issue) {
+                    const issue = issueElement.$;
+                    for (const locationElement of issueElement.location) {
+                        const location = locationElement.$;
+                        const lintIssue = {
+                            id: issue.id,
+                            severity: issue.severity,
+                            message: issue.message,
+                            category: issue.category,
+                            priority: parseInt(issue.priority),
+                            summary: issue.summary,
+                            explanation: issue.explanation,
+                            errorLine1: issue.errorLine1,
+                            errorLine2: issue.errorLine2,
+                            url: issue.url ?? undefined,
+                            urls: issue.urls ?? undefined,
+                            file: location.file,
+                            line: parseInt(location.line),
+                            column: parseInt(location.column)
+                        };
+                        lintIssues.push(lintIssue);
+                    }
                 }
             }
             resolve(lintIssues);
