@@ -77,7 +77,7 @@ function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[]
     for (const cat of categories) {
       const idTables: string[] = []
       sections.push(`### ${cat}`)
-      const categoryData = lintIssues.filter(li => li.category === cat[0])
+      const categoryData = lintIssues.filter(li => li.category === cat)
       const ids = [...new Set(categoryData.map((li, idIndex) => {
             const issueId = li.id
             const index = idIndex
