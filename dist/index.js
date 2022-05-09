@@ -307,7 +307,7 @@ function getLintIssuesReport(lintIssues, baseUrl) {
                         count.toString(),
                         headerLink,
                         idData.summary,
-                        getSeverityIcon(idData)
+                        `${getSeverityIcon(idData)}`
                     ]);
                     const nameLink = `<a id="${lintSlug.id}" href="${baseUrl + lintSlug.link}">${idData.summary}</a>`;
                     idTables.push(`## ${nameLink}`);
