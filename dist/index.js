@@ -440,8 +440,10 @@ exports.slug = void 0;
 function slug(name) {
     const slugId = name
         .trim()
+        .toLowerCase()
         .replace(/_/g, '')
         .replace(/[./\\]/g, '-')
+        .replace(/\s+/g, '-')
         .replace(/[^\w-]/g, '');
     const id = `user-content-${slugId}`;
     const link = `#${slugId}`;

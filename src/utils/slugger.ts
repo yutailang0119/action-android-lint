@@ -4,8 +4,10 @@
 export function slug(name: string): {id: string; link: string} {
   const slugId = name
     .trim()
+    .toLowerCase()
     .replace(/_/g, '')
     .replace(/[./\\]/g, '-')
+    .replace(/\s+/g, '-')
     .replace(/[^\w-]/g, '')
 
   const id = `user-content-${slugId}`
