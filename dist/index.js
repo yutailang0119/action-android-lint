@@ -279,8 +279,9 @@ function getLintIssuesReport(lintIssues) {
     sections.push('## Summary\n\n');
     if (lintIssues.length > 1) {
         const categories = [...new Set(lintIssues.map(li => li.category))];
-        const idTables = [];
+        const issueDetails = [];
         for (const cat of categories) {
+            const idTables = [];
             sections.push(`### ${cat}`);
             const categoryData = lintIssues.filter(li => li.category === cat);
             const ids = [...new Set(categoryData.map(li => li.id))];
@@ -289,9 +290,8 @@ function getLintIssuesReport(lintIssues) {
                 const idData = categoryData.find(cd => cd.id === id);
                 const idRows = categoryData.filter(cd => cd.id === id);
                 const count = idRows.length;
-                if (count > 0 && idRows && idData) {
+                if (idData && idRows && count > 0) {
                     const headerLink = getHeaderLink(id, idData.summary);
-                    core.info(`Header link = ${headerLink}`);
                     categorySummaryRows.push([
                         count.toString(),
                         headerLink,
@@ -319,8 +319,9 @@ function getLintIssuesReport(lintIssues) {
             }
             const catTable = markdown_utils_1.table(['Count', 'Id', 'Summary'], [markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Left], ...categorySummaryRows);
             sections.push(catTable);
-            sections.push(idTables.join('\n'));
+            issueDetails.push(idTables.join('\n'));
         }
+        sections.push(...issueDetails);
     }
     else {
         sections.push('Congratulations! No lint issues found!');

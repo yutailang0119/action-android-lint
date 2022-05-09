@@ -117,7 +117,7 @@ function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
       )
 
       sections.push(catTable)
-      // issueDetails.push(idTables.join('\n'))
+      issueDetails.push(idTables.join('\n'))
     }
     sections.push(...issueDetails)
   } else {
