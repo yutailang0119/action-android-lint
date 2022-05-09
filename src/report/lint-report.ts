@@ -125,7 +125,7 @@ function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[]
       }
       const catTable = table(
         ['Count', 'Id', 'Summary', 'Severity'],
-        [Align.Left, Align.Left, Align.Left, Align.Center],
+        [Align.Right, Align.Left, Align.Left, Align.Center],
         ...categorySummaryRows
       )
 

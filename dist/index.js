@@ -330,7 +330,7 @@ function getLintIssuesReport(lintIssues, baseUrl) {
                     }
                 }
             }
-            const catTable = markdown_utils_1.table(['Count', 'Id', 'Summary', 'Severity'], [markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Center], ...categorySummaryRows);
+            const catTable = markdown_utils_1.table(['Count', 'Id', 'Summary', 'Severity'], [markdown_utils_1.Align.Right, markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Center], ...categorySummaryRows);
             sections.push(catTable);
             issueDetails.push(idTables.join('\n'));
         }
