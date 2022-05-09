@@ -415,7 +415,7 @@ function getByteLength(text) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ellipsis = exports.fixEol = exports.tableEscape = exports.table = exports.link = exports.Icon = exports.Align = void 0;
+exports.ellipsis = exports.fixEol = exports.tableEscape = exports.table = exports.link = exports.Align = void 0;
 // eslint-disable-next-line filenames/match-regex
 var Align;
 (function (Align) {
@@ -424,12 +424,6 @@ var Align;
     Align["Right"] = "---:";
     Align["Home"] = "---";
 })(Align = exports.Align || (exports.Align = {}));
-exports.Icon = {
-    informational: ':information_source:',
-    warning: ':warning:',
-    error: ':bangbang:',
-    fatal: ':rotating_light:'
-};
 function link(title, address) {
     return `[${title}](${address})`;
 }
@@ -437,7 +431,9 @@ exports.link = link;
 function table(headers, align, ...rows) {
     const headerRow = `|${headers.map(tableEscape).join('|')}|`;
     const alignRow = `|${align.join('|')}|`;
-    const contentRows = rows.map(row => `|${row.map(tableEscape).join('|')}|`).join('\n');
+    const contentRows = rows
+        .map(row => `|${row.map(tableEscape).join('|')}|`)
+        .join('\n');
     return [headerRow, alignRow, contentRows].join('\n');
 }
 exports.table = table;

@@ -6,22 +6,21 @@ export enum Align {
   Home = '---'
 }
 
-export const Icon = {
-  informational: ':information_source:',
-  warning: ':warning:',
-  error: ':bangbang:',
-  fatal: ':rotating_light:'
-}
-
 export function link(title: string, address: string): string {
   return `[${title}](${address})`
 }
 
 type ToString = string | number | boolean | Date
-export function table(headers: ToString[], align: ToString[], ...rows: ToString[][]): string {
+export function table(
+  headers: ToString[],
+  align: ToString[],
+  ...rows: ToString[][]
+): string {
   const headerRow = `|${headers.map(tableEscape).join('|')}|`
   const alignRow = `|${align.join('|')}|`
-  const contentRows = rows.map(row => `|${row.map(tableEscape).join('|')}|`).join('\n')
+  const contentRows = rows
+    .map(row => `|${row.map(tableEscape).join('|')}|`)
+    .join('\n')
   return [headerRow, alignRow, contentRows].join('\n')
 }
 
