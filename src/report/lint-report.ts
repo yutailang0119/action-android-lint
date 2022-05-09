@@ -83,9 +83,8 @@ function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
         const idData = categoryData.find(cd => cd.id === id)
         const idRows = categoryData.filter(cd => cd.id === id)
         const count = idRows.length
-        if (count > 0 && idRows && idData) {
+        if (idData && idRows && count > 0) {
           const headerLink = getHeaderLink(id, idData.summary)
-          core.info(`Header link = ${headerLink}`)
           categorySummaryRows.push([
             count.toString(),
             headerLink,
@@ -118,7 +117,7 @@ function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
       )
 
       sections.push(catTable)
-      issueDetails.push(idTables.join('\n'))
+      // issueDetails.push(idTables.join('\n'))
     }
     sections.push(...issueDetails)
   } else {
