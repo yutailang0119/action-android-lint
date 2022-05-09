@@ -72,29 +72,28 @@ function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[]
   sections.push('## Summary\n\n')
 
   if (lintIssues.length > 1) {
-    const categories = [...new Set(lintIssues.map(li => li.category))]
+    const categories = [...new Set(lintIssues.map(li => li.category))].map((cat, catIndex) => {
+        const category = cat
+        const index = catIndex
+        return {category, index}
+    })
     const issueDetails: string[] = []
     for (const cat of categories) {
       const idTables: string[] = []
-      sections.push(`### ${cat}`)
-      const categoryData = lintIssues.filter(li => li.category === cat)
+      sections.push(`### ${cat.category}`)
+      const categoryData = lintIssues.filter(li => li.category === cat.category)
       const ids = [...new Set(categoryData.map(li => li.id))].map((li, idIndex) => {
           const issueId = li
           const index = idIndex
           return {issueId, index}
       })
-      // const ids = [...new Set(categoryData.map((li, idIndex) => {
-      //       const issueId = li.id
-      //       const index = idIndex
-      //       return {issueId, index}
-      // }))]
       const categorySummaryRows: string[][] = []
       for (const id of ids) {
         const idData = categoryData.find(cd => cd.id === id.issueId)
         const idRows = categoryData.filter(cd => cd.id === id.issueId)
         const count = idRows.length
         if (idData && idRows && count > 0) {
-          const lintSlug = makeLintIssueSlug(id.index)
+          const lintSlug = makeLintIssueSlug(cat.index, id.index)
           const addr = baseUrl + lintSlug.link
           const headerLink = link(id.issueId, addr)
           categorySummaryRows.push([
@@ -139,8 +138,8 @@ function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[]
   return sections
 }
 
-function makeLintIssueSlug(idIndex: number): {id: string; link: string} {
-  return slug(`i${idIndex}`)
+function makeLintIssueSlug(categoryIndex: number, idIndex: number): {id: string; link: string} {
+  return slug(`c${categoryIndex}-${idIndex}`)
 }
 
 function getLintReportBadges(lintIssues: LintIssue[]): string[] {
