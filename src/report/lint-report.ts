@@ -72,8 +72,9 @@ function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
 
   if (lintIssues.length > 1) {
     const categories = [...new Set(lintIssues.map(li => li.category))]
-    const idTables: string[] = []
+    const issueDetails: string[] = []
     for (const cat of categories) {
+      const idTables: string[] = []
       sections.push(`### ${cat}`)
       const categoryData = lintIssues.filter(li => li.category === cat)
       const ids = [...new Set(categoryData.map(li => li.id))]
@@ -117,8 +118,9 @@ function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
       )
 
       sections.push(catTable)
-      sections.push(idTables.join('\n'))
+      issueDetails.push(idTables.join('\n'))
     }
+    sections.push(...issueDetails)
   } else {
     sections.push('Congratulations! No lint issues found!')
   }
