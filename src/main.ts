@@ -11,7 +11,7 @@ async function main(): Promise<void> {
     const lintReporter = new LintReporter()
     await lintReporter.run()
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed((error as Error).message)
   }
 }
 

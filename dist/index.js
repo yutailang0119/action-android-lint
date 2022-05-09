@@ -8,7 +8,11 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -66,8 +70,8 @@ class LintReporter {
                 },
                 ...github.context.repo
             });
-            const lintIssues = await parser_1.parseLintXmls(files);
-            const summary = lint_report_1.buildLintReportMarkdown(lintIssues, createResp.data.html_url ?? "");
+            const lintIssues = await (0, parser_1.parseLintXmls)(files);
+            const summary = (0, lint_report_1.buildLintReportMarkdown)(lintIssues, createResp.data.html_url ?? "");
             const conclusion = 'success';
             core.info(`Updating check run: ${name}`);
             const resp = await this.octokit.checks.update({
@@ -125,7 +129,11 @@ main();
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -153,7 +161,7 @@ const xml2js = __importStar(__nccwpck_require__(6189));
 const parseLintXmls = async (files) => {
     const list = await Promise.all(files.map(async (file) => {
         const xml = fs_1.default.readFileSync(file, 'utf-8');
-        return await exports.parseLintXml(xml);
+        return await (0, exports.parseLintXml)(xml);
     }));
     return list.flat();
 };
@@ -206,7 +214,11 @@ exports.parseLintXml = parseLintXml;
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -302,7 +314,7 @@ function getLintIssuesReport(lintIssues, baseUrl) {
                 if (idData && idRows && count > 0) {
                     const lintSlug = makeLintIssueSlug(cat.index, id.index);
                     const addr = baseUrl + lintSlug.link;
-                    const headerLink = markdown_utils_1.link(id.issueId, addr);
+                    const headerLink = (0, markdown_utils_1.link)(id.issueId, addr);
                     categorySummaryRows.push([
                         count.toString(),
                         headerLink,
@@ -314,7 +326,7 @@ function getLintIssuesReport(lintIssues, baseUrl) {
                     idTables.push(`### Explanation`);
                     idTables.push(`${idData.explanation}`);
                     if (idData.url && idData.urls) {
-                        idTables.push(`More Info: ${markdown_utils_1.link(idData.url, idData.urls)}`);
+                        idTables.push(`More Info: ${(0, markdown_utils_1.link)(idData.url, idData.urls)}`);
                     }
                     for (const idI of idRows) {
                         idTables.push('---');
@@ -330,7 +342,7 @@ function getLintIssuesReport(lintIssues, baseUrl) {
                     }
                 }
             }
-            const catTable = markdown_utils_1.table(['Count', 'Id', 'Summary', 'Severity'], [markdown_utils_1.Align.Right, markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Center], ...categorySummaryRows);
+            const catTable = (0, markdown_utils_1.table)(['Count', 'Id', 'Summary', 'Severity'], [markdown_utils_1.Align.Right, markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Center], ...categorySummaryRows);
             sections.push(catTable);
             issueDetails.push(idTables.join('\n'));
         }
@@ -342,7 +354,7 @@ function getLintIssuesReport(lintIssues, baseUrl) {
     return sections;
 }
 function makeLintIssueSlug(categoryIndex, idIndex) {
-    return slugger_1.slug(`c${categoryIndex}-${idIndex}`);
+    return (0, slugger_1.slug)(`c${categoryIndex}-${idIndex}`);
 }
 function getSeverityIcon(lintIssue) {
     switch (lintIssue.severity) {
