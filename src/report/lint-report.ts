@@ -1,7 +1,7 @@
-import * as core from '@actions/core'
-import {LintIssue} from '../lint-issue'
-import {Align, link, table} from '../utils/markdown_utils'
-import {slug} from '../utils/slugger'
+import * as core from "@actions/core";
+import { LintIssue } from "../lint-issue";
+import { Align, link, table } from "../utils/markdown_utils";
+import { slug } from "../utils/slugger";
 
 const MAX_REPORT_LENGTH = 65535
 
@@ -125,7 +125,7 @@ function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[]
       }
       const catTable = table(
         ['Count', 'Id', 'Summary', 'Severity'],
-        [Align.Left, Align.Left, Align.Left],
+        [Align.Left, Align.Left, Align.Left, Align.Center],
         ...categorySummaryRows
       )
 
