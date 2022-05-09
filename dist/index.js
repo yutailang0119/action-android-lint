@@ -67,7 +67,7 @@ class LintReporter {
                 ...github.context.repo
             });
             const lintIssues = await parser_1.parseLintXmls(files);
-            const summary = lint_report_1.buildLintReportMarkdown(lintIssues);
+            const summary = lint_report_1.buildLintReportMarkdown(lintIssues, createResp.data.html_url ?? "");
             const conclusion = 'success';
             core.info(`Updating check run: ${name}`);
             const resp = await this.octokit.checks.update({
@@ -227,10 +227,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.buildLintReportMarkdown = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const markdown_utils_1 = __nccwpck_require__(6988);
+const slugger_1 = __nccwpck_require__(3328);
 const MAX_REPORT_LENGTH = 65535;
-function buildLintReportMarkdown(lintIssues) {
+function buildLintReportMarkdown(lintIssues, baseUrl) {
     core.info('Generating lint analysis summary');
-    const lines = renderLintReport(lintIssues);
+    const lines = renderLintReport(lintIssues, baseUrl);
     const report = lines.join('\n');
     if (getByteLength(report) <= MAX_REPORT_LENGTH) {
         return report;
@@ -265,16 +266,16 @@ function trimReport(lines) {
     reportLines.push(errorMsg);
     return reportLines.join('\n');
 }
-function renderLintReport(lintIssues) {
+function renderLintReport(lintIssues, baseUrl) {
     const sections = [];
     sections.push('# Android Lint Results\n\n');
     const badges = getLintReportBadges(lintIssues);
     sections.push(...badges);
-    const issues = getLintIssuesReport(lintIssues);
+    const issues = getLintIssuesReport(lintIssues, baseUrl);
     sections.push(...issues);
     return sections;
 }
-function getLintIssuesReport(lintIssues) {
+function getLintIssuesReport(lintIssues, baseUrl) {
     const sections = [];
     sections.push('## Summary\n\n');
     if (lintIssues.length > 1) {
@@ -291,7 +292,7 @@ function getLintIssuesReport(lintIssues) {
                 const idRows = categoryData.filter(cd => cd.id === id);
                 const count = idRows.length;
                 if (idData && idRows && count > 0) {
-                    const headerLink = getHeaderLink(id, idData.summary);
+                    const headerLink = getHeaderLink(id, idData.summary, baseUrl);
                     categorySummaryRows.push([
                         count.toString(),
                         headerLink,
@@ -328,8 +329,13 @@ function getLintIssuesReport(lintIssues) {
     }
     return sections;
 }
-function getHeaderLink(text, header) {
-    return markdown_utils_1.link(text, `#${header.replace(/\s+/g, '-').toLowerCase()}`);
+function makeLintIssueSlug(lintHeader) {
+    return slugger_1.slug(`${lintHeader}`);
+}
+function getHeaderLink(text, header, baseUrl) {
+    const liSlug = makeLintIssueSlug(header);
+    const nameLink = `<a id="${liSlug.id}" href="${baseUrl + liSlug.link}">${text}</a>`;
+    return nameLink;
 }
 function getLintReportBadges(lintIssues) {
     const informational = lintIssues.reduce((sum, li) => sum + (li.severity === 'Information' ? 1 : 0), 0);
@@ -417,6 +423,31 @@ function ellipsis(text, maxLength) {
     return `${text.substr(0, maxLength - 3)}...`;
 }
 exports.ellipsis = ellipsis;
+
+
+/***/ }),
+
+/***/ 3328:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.slug = void 0;
+// Returns HTML element id and href link usable as manual anchor links
+// This is needed because Github in check run summary doesn't automatically
+// create links out of headings as it normally does for other markdown content
+function slug(name) {
+    const slugId = name
+        .trim()
+        .replace(/_/g, '')
+        .replace(/[./\\]/g, '-')
+        .replace(/[^\w-]/g, '');
+    const id = `user-content-${slugId}`;
+    const link = `#${slugId}`;
+    return { id, link };
+}
+exports.slug = slug;
 
 
 /***/ }),

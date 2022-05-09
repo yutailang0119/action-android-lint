@@ -49,7 +49,7 @@ class LintReporter {
       })
 
       const lintIssues = await parseLintXmls(files)
-      const summary = buildLintReportMarkdown(lintIssues)
+      const summary = buildLintReportMarkdown(lintIssues, createResp.data.html_url ?? "")
       const conclusion = 'success'
 
       core.info(`Updating check run: ${name}`)

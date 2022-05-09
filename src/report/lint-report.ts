@@ -1,13 +1,14 @@
 import * as core from '@actions/core'
 import {LintIssue} from '../lint-issue'
 import {Align, link, table} from '../utils/markdown_utils'
+import {slug} from '../utils/slugger'
 
 const MAX_REPORT_LENGTH = 65535
 
-export function buildLintReportMarkdown(lintIssues: LintIssue[]): string {
+export function buildLintReportMarkdown(lintIssues: LintIssue[], baseUrl: string): string {
   core.info('Generating lint analysis summary')
 
-  const lines = renderLintReport(lintIssues)
+  const lines = renderLintReport(lintIssues, baseUrl)
   const report = lines.join('\n')
 
   if (getByteLength(report) <= MAX_REPORT_LENGTH) {
@@ -51,7 +52,7 @@ function trimReport(lines: string[]): string {
   return reportLines.join('\n')
 }
 
-function renderLintReport(lintIssues: LintIssue[]): string[] {
+function renderLintReport(lintIssues: LintIssue[], baseUrl: string): string[] {
   const sections: string[] = []
 
   sections.push('# Android Lint Results\n\n')
@@ -59,13 +60,13 @@ function renderLintReport(lintIssues: LintIssue[]): string[] {
   const badges = getLintReportBadges(lintIssues)
   sections.push(...badges)
 
-  const issues = getLintIssuesReport(lintIssues)
+  const issues = getLintIssuesReport(lintIssues, baseUrl)
   sections.push(...issues)
 
   return sections
 }
 
-function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
+function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[] {
   const sections: string[] = []
 
   sections.push('## Summary\n\n')
@@ -84,7 +85,7 @@ function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
         const idRows = categoryData.filter(cd => cd.id === id)
         const count = idRows.length
         if (idData && idRows && count > 0) {
-          const headerLink = getHeaderLink(id, idData.summary)
+          const headerLink = getHeaderLink(id, idData.summary, baseUrl)
           categorySummaryRows.push([
             count.toString(),
             headerLink,
@@ -126,8 +127,14 @@ function getLintIssuesReport(lintIssues: LintIssue[]): string[] {
   return sections
 }
 
-function getHeaderLink(text: string, header: string): string {
-  return link(text, `#${header.replace(/\s+/g, '-').toLowerCase()}`)
+function makeLintIssueSlug(lintHeader: string): {id: string; link: string} {
+  return slug(`${lintHeader}`)
+}
+
+function getHeaderLink(text: string, header: string, baseUrl: string): string {
+  const liSlug = makeLintIssueSlug(header)
+  const nameLink = `<a id="${liSlug.id}" href="${baseUrl + liSlug.link}">${text}</a>`
+  return nameLink
 }
 
 function getLintReportBadges(lintIssues: LintIssue[]): string[] {
