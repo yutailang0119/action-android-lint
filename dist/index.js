@@ -284,21 +284,28 @@ function getLintIssuesReport(lintIssues, baseUrl) {
         for (const cat of categories) {
             const idTables = [];
             sections.push(`### ${cat}`);
-            const categoryData = lintIssues.filter(li => li.category === cat);
-            const ids = [...new Set(categoryData.map(li => li.id))];
+            const categoryData = lintIssues.filter(li => li.category === cat[0]);
+            const ids = [...new Set(categoryData.map((li, idIndex) => {
+                    const issueId = li.id;
+                    const index = idIndex;
+                    return { issueId, index };
+                }))];
             const categorySummaryRows = [];
             for (const id of ids) {
-                const idData = categoryData.find(cd => cd.id === id);
-                const idRows = categoryData.filter(cd => cd.id === id);
+                const idData = categoryData.find(cd => cd.id === id.issueId);
+                const idRows = categoryData.filter(cd => cd.id === id.issueId);
                 const count = idRows.length;
                 if (idData && idRows && count > 0) {
-                    const headerLink = getHeaderLink(id, idData.summary, baseUrl);
+                    const lintSlug = makeLintIssueSlug(id.index);
+                    const addr = baseUrl + lintSlug.link;
+                    const headerLink = markdown_utils_1.link(id.issueId, addr);
                     categorySummaryRows.push([
                         count.toString(),
                         headerLink,
                         idData.summary
                     ]);
-                    idTables.push(`## ${idData.summary}`);
+                    const nameLink = `<a id="${lintSlug.id}" href="${baseUrl + lintSlug.link}">${idData.summary}</a>`;
+                    idTables.push(`## ${nameLink}`);
                     idTables.push(`### Explanation`);
                     idTables.push(`${idData.explanation}`);
                     if (idData.url && idData.urls) {
@@ -329,13 +336,8 @@ function getLintIssuesReport(lintIssues, baseUrl) {
     }
     return sections;
 }
-function makeLintIssueSlug(lintHeader) {
-    return slugger_1.slug(`${lintHeader}`);
-}
-function getHeaderLink(text, header, baseUrl) {
-    const liSlug = makeLintIssueSlug(header);
-    const nameLink = `<a id="${liSlug.id}" href="${baseUrl + liSlug.link}">${text}</a>`;
-    return nameLink;
+function makeLintIssueSlug(idIndex) {
+    return slugger_1.slug(`i${idIndex}`);
 }
 function getLintReportBadges(lintIssues) {
     const informational = lintIssues.reduce((sum, li) => sum + (li.severity === 'Information' ? 1 : 0), 0);
