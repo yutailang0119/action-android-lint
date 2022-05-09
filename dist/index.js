@@ -285,11 +285,16 @@ function getLintIssuesReport(lintIssues, baseUrl) {
             const idTables = [];
             sections.push(`### ${cat}`);
             const categoryData = lintIssues.filter(li => li.category === cat);
-            const ids = [...new Set(categoryData.map((li, idIndex) => {
-                    const issueId = li.id;
-                    const index = idIndex;
-                    return { issueId, index };
-                }))];
+            const ids = [...new Set(categoryData.map(li => li.id))].map((li, idIndex) => {
+                const issueId = li;
+                const index = idIndex;
+                return { issueId, index };
+            });
+            // const ids = [...new Set(categoryData.map((li, idIndex) => {
+            //       const issueId = li.id
+            //       const index = idIndex
+            //       return {issueId, index}
+            // }))]
             const categorySummaryRows = [];
             for (const id of ids) {
                 const idData = categoryData.find(cd => cd.id === id.issueId);
