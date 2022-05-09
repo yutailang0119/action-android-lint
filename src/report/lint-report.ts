@@ -99,7 +99,8 @@ function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[]
           categorySummaryRows.push([
             count.toString(),
             headerLink,
-            idData.summary
+            idData.summary,
+            getSeverityIcon(idData)
           ])
           const nameLink = `<a id="${lintSlug.id}" href="${baseUrl + lintSlug.link}">${idData.summary}</a>`
           idTables.push(`## ${nameLink}`)
@@ -123,7 +124,7 @@ function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[]
         }
       }
       const catTable = table(
-        ['Count', 'Id', 'Summary'],
+        ['Count', 'Id', 'Summary', 'Severity'],
         [Align.Left, Align.Left, Align.Left],
         ...categorySummaryRows
       )
@@ -140,6 +141,19 @@ function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[]
 
 function makeLintIssueSlug(categoryIndex: number, idIndex: number): {id: string; link: string} {
   return slug(`c${categoryIndex}-${idIndex}`)
+}
+
+function getSeverityIcon(lintIssue: LintIssue): string {
+  switch (lintIssue.severity) {
+    case 'Fatal':
+      return ':rotating_light:'
+    case 'Error':
+      return ':bangbang:'
+    case 'Warning':
+      return ':warning:'
+    default:
+      return ':information_source:'
+  }
 }
 
 function getLintReportBadges(lintIssues: LintIssue[]): string[] {

@@ -306,7 +306,8 @@ function getLintIssuesReport(lintIssues, baseUrl) {
                     categorySummaryRows.push([
                         count.toString(),
                         headerLink,
-                        idData.summary
+                        idData.summary,
+                        getSeverityIcon(idData)
                     ]);
                     const nameLink = `<a id="${lintSlug.id}" href="${baseUrl + lintSlug.link}">${idData.summary}</a>`;
                     idTables.push(`## ${nameLink}`);
@@ -329,7 +330,7 @@ function getLintIssuesReport(lintIssues, baseUrl) {
                     }
                 }
             }
-            const catTable = markdown_utils_1.table(['Count', 'Id', 'Summary'], [markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Left], ...categorySummaryRows);
+            const catTable = markdown_utils_1.table(['Count', 'Id', 'Summary', 'Severity'], [markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Left], ...categorySummaryRows);
             sections.push(catTable);
             issueDetails.push(idTables.join('\n'));
         }
@@ -342,6 +343,18 @@ function getLintIssuesReport(lintIssues, baseUrl) {
 }
 function makeLintIssueSlug(categoryIndex, idIndex) {
     return slugger_1.slug(`c${categoryIndex}-${idIndex}`);
+}
+function getSeverityIcon(lintIssue) {
+    switch (lintIssue.severity) {
+        case 'Fatal':
+            return ':rotating_light:';
+        case 'Error':
+            return ':bangbang:';
+        case 'Warning':
+            return ':warning:';
+        default:
+            return ':information_source:';
+    }
 }
 function getLintReportBadges(lintIssues) {
     const informational = lintIssues.reduce((sum, li) => sum + (li.severity === 'Information' ? 1 : 0), 0);
