@@ -17,6 +17,7 @@ async function main(): Promise<void> {
 
 class LintReporter {
   readonly token = core.getInput('token', {required: true})
+  readonly runName = core.getInput('name', {required: true})
   readonly octokit: InstanceType<typeof GitHub>
   readonly context = this.getCheckRunContext()
 
@@ -33,26 +34,25 @@ class LintReporter {
       const globber = await glob.create(reportPath, globOptions)
       const files = await globber.glob()
 
-      const name = 'AndroidLintResults'
-
-      core.info(`Creating check run: ${name}`)
+      core.info(`Creating check run: ${this.runName}`)
 
       const createResp = await this.octokit.checks.create({
         head_sha: this.context.sha,
-        name,
+        name: this.runName,
         status: 'in_progress',
         output: {
-          title: name,
+          title: this.runName,
           summary: ''
         },
         ...github.context.repo
       })
 
       const lintIssues = await parseLintXmls(files)
-      const summary = buildLintReportMarkdown(lintIssues, createResp.data.html_url ?? "")
+      const summary = buildLintReportMarkdown(
+        lintIssues,
+        createResp.data.html_url ?? ''
+      )
       const conclusion = 'success'
-
-      core.info(`Updating check run: ${name}`)
 
       const resp = await this.octokit.checks.update({
         check_run_id: createResp.data.id,

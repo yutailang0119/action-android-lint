@@ -12,6 +12,10 @@ inputs:
     description: GitHub Access Token
     required: false
     default: ${{ github.token }}
+  name:
+    description: 'Name of the check run to add'
+    default: 'Publish Android Lint Results'
+    required: false
 runs:
   using: 'node16'
   main: 'dist/index.js'
