@@ -68,11 +68,6 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
           idList.push({header: 'Explanation', headerLevel: 3, contents})
         }
       }
-      const catTable = table(
-        ['Count', 'Id', 'Summary', 'Severity'],
-        [Align.Right, Align.Left, Align.Left, Align.Center],
-        ...categorySummaryRows
-      )
       const array: SummaryTableRow[] = []
       array.push([
         {data: 'Count', header: true},
@@ -84,8 +79,6 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
         array.push(row)
       }
       summary.addTable(array)
-
-      summary.addRaw(catTable)
     }
     for (const row of idList) {
       summary.addHeading(row.header, row.headerLevel)

@@ -488,7 +488,6 @@ async function buildJobSummary(lintIssues) {
                     idList.push({ header: 'Explanation', headerLevel: 3, contents });
                 }
             }
-            const catTable = (0, markdown_utils_1.table)(['Count', 'Id', 'Summary', 'Severity'], [markdown_utils_1.Align.Right, markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Center], ...categorySummaryRows);
             const array = [];
             array.push([
                 { data: 'Count', header: true },
@@ -500,7 +499,6 @@ async function buildJobSummary(lintIssues) {
                 array.push(row);
             }
             summary.addTable(array);
-            summary.addRaw(catTable);
         }
         for (const row of idList) {
             summary.addHeading(row.header, row.headerLevel);
