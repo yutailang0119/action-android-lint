@@ -436,9 +436,7 @@ async function buildJobSummary(lintIssues) {
         .addBreak()
         .addBreak();
     const badges = getLintReportBadges(lintIssues);
-    for (const badge of badges) {
-        summary.addRaw(badge);
-    }
+    summary.addRaw(badges.join('\n'));
     summary.addHeading('Summary', 2);
     summary.addBreak().addBreak();
     if (lintIssues.length > 1) {
@@ -462,8 +460,6 @@ async function buildJobSummary(lintIssues) {
                 const idRows = categoryData.filter(cd => cd.id === id.issueId);
                 const count = idRows.length;
                 if (idData && idRows && count > 0) {
-                    //const lintSlug = makeLintIssueSlug(cat.index, id.index)
-                    //const addr = baseUrl + lintSlug.link
                     const headerLink = (0, markdown_utils_1.link)(idData.id, makeLintIssueSlug(idData.summary));
                     categorySummaryRows.push([
                         count.toString(),
@@ -493,17 +489,17 @@ async function buildJobSummary(lintIssues) {
                 }
             }
             const catTable = (0, markdown_utils_1.table)(['Count', 'Id', 'Summary', 'Severity'], [markdown_utils_1.Align.Right, markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Center], ...categorySummaryRows);
-            summary.addRaw(catTable, true);
+            summary.addRaw(catTable);
         }
         for (const row of idList) {
             summary.addHeading(row.header, row.headerLevel);
-            summary.addRaw(row.contents.join('\n'), true);
+            summary.addRaw(row.contents.join('\n'));
         }
     }
     else {
         summary.addRaw('Congratulations! No lint issues found!');
     }
-    await summary.write({ overwrite: true });
+    await summary.write();
 }
 exports.buildJobSummary = buildJobSummary;
 function getSeverityIcon(lintIssue) {

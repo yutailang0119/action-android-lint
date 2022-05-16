@@ -11,9 +11,7 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
     .addBreak()
     .addBreak()
   const badges = getLintReportBadges(lintIssues)
-  for (const badge of badges) {
-    summary.addRaw(badge)
-  }
+  summary.addRaw(badges.join('\n'))
   summary.addHeading('Summary', 2)
   summary.addBreak().addBreak()
   if (lintIssues.length > 1) {
@@ -41,8 +39,6 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
         const idRows = categoryData.filter(cd => cd.id === id.issueId)
         const count = idRows.length
         if (idData && idRows && count > 0) {
-          //const lintSlug = makeLintIssueSlug(cat.index, id.index)
-          //const addr = baseUrl + lintSlug.link
           const headerLink = link(idData.id, makeLintIssueSlug(idData.summary))
           categorySummaryRows.push([
             count.toString(),
@@ -77,16 +73,16 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
         ...categorySummaryRows
       )
 
-      summary.addRaw(catTable, true)
+      summary.addRaw(catTable)
     }
     for (const row of idList) {
       summary.addHeading(row.header, row.headerLevel)
-      summary.addRaw(row.contents.join('\n'), true)
+      summary.addRaw(row.contents.join('\n'))
     }
   } else {
     summary.addRaw('Congratulations! No lint issues found!')
   }
-  await summary.write({overwrite: true})
+  await summary.write()
 }
 
 interface IdRow {
