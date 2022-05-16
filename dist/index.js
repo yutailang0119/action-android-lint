@@ -280,12 +280,10 @@ class LintReporter {
             // const lintIssues = await parseLintXmls(files)
             const lintIssues = [];
             const input = await inputProvider.load();
-            core.startGroup('input entries:');
-            for (const i of input) {
-                core.info(i);
+            for (const issuesXml of input) {
+                const issues = await (0, parser_1.parseLintXml)(issuesXml);
+                lintIssues.push(...issues);
             }
-            const lis = await (0, parser_1.parseLintXmls)(input);
-            lintIssues.push(...lis);
             const summary = (0, lint_report_1.buildLintReportMarkdown)(lintIssues, createResp.data.html_url ?? '');
             const conclusion = 'success';
             const resp = await this.octokit.checks.update({

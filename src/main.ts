@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 // import * as glob from '@actions/glob'
 import * as github from '@actions/github'
-import {parseLintXmls /*, parseXmls*/} from './parser'
+import { parseLintXml, parseLintXmls /*, parseXmls*/ } from "./parser";
 import {GitHub} from '@actions/github/lib/utils'
 import {getCheckRunContext} from './utils/github-utils'
 import {buildLintReportMarkdown} from './report/lint-report'
@@ -76,12 +76,10 @@ class LintReporter {
       // const lintIssues = await parseLintXmls(files)
       const lintIssues: LintIssue[] = []
       const input = await inputProvider.load()
-      core.startGroup('input entries:')
-      for (const i of input) {
-        core.info(i)
+      for (const issuesXml of input) {
+        const issues = await parseLintXml(issuesXml)
+        lintIssues.push(...issues)
       }
-      const lis = await parseLintXmls(input)
-      lintIssues.push(...lis)
       const summary = buildLintReportMarkdown(
         lintIssues,
         createResp.data.html_url ?? ''
