@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 // import * as glob from '@actions/glob'
 import * as github from '@actions/github'
-import { parseLintXml, parseLintXmls /*, parseXmls*/ } from "./parser";
+import {parseLintXml} from './parser'
 import {GitHub} from '@actions/github/lib/utils'
 import {getCheckRunContext} from './utils/github-utils'
 import {buildLintReportMarkdown} from './report/lint-report'
@@ -39,9 +39,6 @@ class LintReporter {
 
   async run(): Promise<void> {
     try {
-      // const globber = await glob.create(this.reportPath, this.globOptions)
-      // const files = await globber.glob()
-
       core.info(`Creating check run: ${this.runName}`)
 
       const createResp = await this.octokit.checks.create({
@@ -72,8 +69,6 @@ class LintReporter {
           )
         : new LocalFileProvider(this.name, pattern)
 
-      // const trackedFiles = await inputProvider.listTrackedFiles()
-      // const lintIssues = await parseLintXmls(files)
       const lintIssues: LintIssue[] = []
       const input = await inputProvider.load()
       for (const issuesXml of input) {
@@ -105,37 +100,6 @@ class LintReporter {
       if (error instanceof Error) core.setFailed(error.message)
     }
   }
-
-  // getCheckRunContext(): {sha: string; runId: number} {
-  //   if (github.context.eventName === 'workflow_run') {
-  //     core.info(
-  //       'Action was triggered by workflow_run: using SHA and RUN_ID from triggering workflow'
-  //     )
-  //     const event = github.context
-  //       .payload as EventPayloads.WebhookPayloadWorkflowRun
-  //     if (!event.workflow_run) {
-  //       throw new Error(
-  //         "Event of type 'workflow_run' is missing 'workflow_run' field"
-  //       )
-  //     }
-  //     return {
-  //       sha: event.workflow_run.head_commit.id,
-  //       runId: event.workflow_run.id
-  //     }
-  //   }
-  //
-  //   const runId = github.context.runId
-  //   if (github.context.payload.pull_request) {
-  //     core.info(
-  //       `Action was triggered by ${github.context.eventName}: using SHA from head of source branch`
-  //     )
-  //     const pr = github.context.payload
-  //       .pull_request as EventPayloads.WebhookPayloadPullRequestPullRequest
-  //     return {sha: pr.head.sha, runId}
-  //   }
-  //
-  //   return {sha: github.context.sha, runId}
-  // }
 }
 
 main()

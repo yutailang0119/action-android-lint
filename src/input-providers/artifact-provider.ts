@@ -75,8 +75,6 @@ export class ArtifactProvider implements InputProvider {
       await downloadArtifact(this.octokit, art.id, fileName, this.token)
       core.startGroup(`Reading archive ${fileName}`)
       try {
-        // const reportName = this.getReportName(art.name)
-        // core.info(`Report name: ${reportName}`)
         const files: string[] = []
         const zip = new Zip(fileName)
         for (const entry of zip.getEntries()) {
@@ -94,11 +92,6 @@ export class ArtifactProvider implements InputProvider {
           core.info(`Read ${file}: ${content.length} chars`)
           result.push(...files)
         }
-        // if (result[reportName]) {
-        //   result[reportName].push(...files)
-        // } else {
-        //   result[reportName] = files
-        // }
       } finally {
         core.endGroup()
       }

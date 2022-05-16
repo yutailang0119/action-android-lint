@@ -1,11 +1,14 @@
-import * as core from "@actions/core";
-import { LintIssue } from "../lint-issue";
-import { Align, link, table } from "../utils/markdown_utils";
-import { slug } from "../utils/slugger";
+import * as core from '@actions/core'
+import {LintIssue} from '../lint-issue'
+import {Align, link, table} from '../utils/markdown_utils'
+import {slug} from '../utils/slugger'
 
 const MAX_REPORT_LENGTH = 65535
 
-export function buildLintReportMarkdown(lintIssues: LintIssue[], baseUrl: string): string {
+export function buildLintReportMarkdown(
+  lintIssues: LintIssue[],
+  baseUrl: string
+): string {
   core.info('Generating lint analysis summary')
 
   const lines = renderLintReport(lintIssues, baseUrl)
@@ -66,27 +69,34 @@ function renderLintReport(lintIssues: LintIssue[], baseUrl: string): string[] {
   return sections
 }
 
-function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[] {
+function getLintIssuesReport(
+  lintIssues: LintIssue[],
+  baseUrl: string
+): string[] {
   const sections: string[] = []
 
   sections.push('## Summary\n\n')
 
   if (lintIssues.length > 1) {
-    const categories = [...new Set(lintIssues.map(li => li.category))].map((cat, catIndex) => {
+    const categories = [...new Set(lintIssues.map(li => li.category))].map(
+      (cat, catIndex) => {
         const category = cat
         const index = catIndex
         return {category, index}
-    })
+      }
+    )
     const issueDetails: string[] = []
     for (const cat of categories) {
       const idTables: string[] = []
       sections.push(`### ${cat.category}`)
       const categoryData = lintIssues.filter(li => li.category === cat.category)
-      const ids = [...new Set(categoryData.map(li => li.id))].map((li, idIndex) => {
+      const ids = [...new Set(categoryData.map(li => li.id))].map(
+        (li, idIndex) => {
           const issueId = li
           const index = idIndex
           return {issueId, index}
-      })
+        }
+      )
       const categorySummaryRows: string[][] = []
       for (const id of ids) {
         const idData = categoryData.find(cd => cd.id === id.issueId)
@@ -102,7 +112,9 @@ function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[]
             idData.summary,
             `${getSeverityIcon(idData)}`
           ])
-          const nameLink = `<a id="${lintSlug.id}" href="${baseUrl + lintSlug.link}">${idData.summary}</a>`
+          const nameLink = `<a id="${lintSlug.id}" href="${
+            baseUrl + lintSlug.link
+          }">${idData.summary}</a>`
           idTables.push(`## ${nameLink}`)
           idTables.push(`### Explanation`)
           idTables.push(`${idData.explanation}`)
@@ -113,7 +125,7 @@ function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[]
             idTables.push('---')
             idTables.push(`${idI.file}:${idI.line}: ${idI.message}`)
             if (idI.errorLine1) {
-              idTables.push('```java')
+              idTables.push('```')
               idTables.push(`${idI.errorLine1}`)
               if (idI.errorLine2) {
                 idTables.push(`${idI.errorLine2}`)
@@ -139,7 +151,10 @@ function getLintIssuesReport(lintIssues: LintIssue[], baseUrl: string): string[]
   return sections
 }
 
-function makeLintIssueSlug(categoryIndex: number, idIndex: number): {id: string; link: string} {
+function makeLintIssueSlug(
+  categoryIndex: number,
+  idIndex: number
+): {id: string; link: string} {
   return slug(`c${categoryIndex}-${idIndex}`)
 }
 
@@ -190,7 +205,9 @@ function getBadges(
   let uri = ''
   if (informational > 0) {
     uri = encodeURIComponent(`Informational-${informational}-${infoColor}`)
-    badges.push(`![Informational lint issues](https://img.shields.io/badge/${uri})`)
+    badges.push(
+      `![Informational lint issues](https://img.shields.io/badge/${uri})`
+    )
   }
   if (warnings > 0) {
     uri = encodeURIComponent(`Warnings-${warnings}-${warningColor}`)

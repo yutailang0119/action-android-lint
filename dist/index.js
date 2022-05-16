@@ -92,8 +92,6 @@ class ArtifactProvider {
             await (0, github_utils_1.downloadArtifact)(this.octokit, art.id, fileName, this.token);
             core.startGroup(`Reading archive ${fileName}`);
             try {
-                // const reportName = this.getReportName(art.name)
-                // core.info(`Report name: ${reportName}`)
                 const files = [];
                 const zip = new adm_zip_1.default(fileName);
                 for (const entry of zip.getEntries()) {
@@ -111,11 +109,6 @@ class ArtifactProvider {
                     core.info(`Read ${file}: ${content.length} chars`);
                     result.push(...files);
                 }
-                // if (result[reportName]) {
-                //   result[reportName].push(...files)
-                // } else {
-                //   result[reportName] = files
-                // }
             }
             finally {
                 core.endGroup();
@@ -256,8 +249,6 @@ class LintReporter {
     }
     async run() {
         try {
-            // const globber = await glob.create(this.reportPath, this.globOptions)
-            // const files = await globber.glob()
             core.info(`Creating check run: ${this.runName}`);
             const createResp = await this.octokit.checks.create({
                 head_sha: this.context.sha,
@@ -276,8 +267,6 @@ class LintReporter {
             const inputProvider = this.artifact
                 ? new artifact_provider_1.ArtifactProvider(this.octokit, this.artifact, this.name, pattern, this.context.sha, this.context.runId, this.token)
                 : new local_file_provider_1.LocalFileProvider(this.name, pattern);
-            // const trackedFiles = await inputProvider.listTrackedFiles()
-            // const lintIssues = await parseLintXmls(files)
             const lintIssues = [];
             const input = await inputProvider.load();
             for (const issuesXml of input) {
@@ -524,7 +513,7 @@ function getLintIssuesReport(lintIssues, baseUrl) {
                         idTables.push('---');
                         idTables.push(`${idI.file}:${idI.line}: ${idI.message}`);
                         if (idI.errorLine1) {
-                            idTables.push('```java');
+                            idTables.push('```');
                             idTables.push(`${idI.errorLine1}`);
                             if (idI.errorLine2) {
                                 idTables.push(`${idI.errorLine2}`);
