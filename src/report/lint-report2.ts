@@ -2,6 +2,7 @@ import {LintIssue} from '../lint-issue'
 import * as core from '@actions/core'
 import {Align, link, table} from '../utils/markdown_utils'
 import {slug} from '../utils/slugger'
+import {SummaryTableRow, SummaryTableCell} from '@actions/core/lib/summary'
 
 export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
   core.info('Creating job summary for Android Lint results')
@@ -72,6 +73,17 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
         [Align.Right, Align.Left, Align.Left, Align.Center],
         ...categorySummaryRows
       )
+      const array: SummaryTableRow[] = []
+      array.push([
+        {data: 'Count', header: true},
+        {data: 'Id', header: true},
+        {data: 'Summary', header: true},
+        {data: 'Severity', header: true}
+      ])
+      for (const row of categorySummaryRows) {
+        array.push(row)
+      }
+      summary.addTable(array)
 
       summary.addRaw(catTable)
     }

@@ -32,6 +32,7 @@
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
+    "@actions/core": "^1.8.2",
     "@octokit/types": "^6.12.0",
     "@octokit/webhooks": "^7.21.0",
     "@types/adm-zip": "^0.4.33",
