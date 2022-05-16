@@ -76,10 +76,12 @@ class LintReporter {
       // const lintIssues = await parseLintXmls(files)
       const lintIssues: LintIssue[] = []
       const input = await inputProvider.load()
-      for (const theFiles of Object.entries(input)) {
-        const li = await parseLintXmls(theFiles)
-        lintIssues.push(...li)
+      core.startGroup('input entries:')
+      for (const i of input) {
+        core.info(i)
       }
+      const lis = await parseLintXmls(input)
+      lintIssues.push(...lis)
       const summary = buildLintReportMarkdown(
         lintIssues,
         createResp.data.html_url ?? ''
