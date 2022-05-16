@@ -12,7 +12,7 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
     .addBreak()
   const badges = getLintReportBadges(lintIssues)
   for (const badge of badges) {
-    summary.addRaw(badge, true)
+    summary.addRaw(badge)
   }
   summary.addHeading('Summary', 2)
   summary.addBreak().addBreak()
