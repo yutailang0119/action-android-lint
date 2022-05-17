@@ -506,7 +506,7 @@ async function buildJobSummary(lintIssues) {
                 summary.addHeading(row.header, row.headerLevel);
             }
             if (row.contents instanceof CodeBlock) {
-                summary.addCodeBlock(row.contents.contents.join('\n'));
+                summary.addCodeBlock(row.contents.contents.join('\n'), 'java');
             }
             else if (row.contents instanceof Link) {
                 summary.addLink(row.contents.text, row.contents.address);
