@@ -15,8 +15,8 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
   for (const badge of badges) {
     summary.addImage(badge.location, badge.hintText)
   }
-  summary.addHeading('Summary', 2)
-  summary.addBreak().addBreak()
+  // summary.addHeading('Summary', 2)
+  // summary.addBreak().addBreak()
   if (lintIssues.length > 1) {
     summary.addRaw(buildLintReportMarkdown(lintIssues, baseUrl), true)
     // const categories = [...new Set(lintIssues.map(li => li.category))].map(

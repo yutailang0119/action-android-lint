@@ -58,7 +58,7 @@ function trimReport(lines: string[]): string {
 function renderLintReport(lintIssues: LintIssue[], baseUrl: string): string[] {
   const sections: string[] = []
 
-  // sections.push('# Android Lint Results\n\n')
+  sections.push('\n\n')
 
   // const badges = getLintReportBadges(lintIssues)
   // sections.push(...badges)
@@ -75,7 +75,7 @@ function getLintIssuesReport(
 ): string[] {
   const sections: string[] = []
 
-  // sections.push('## Summary\n\n')
+  sections.push('## Summary\n\n')
 
   if (lintIssues.length > 1) {
     const categories = [...new Set(lintIssues.map(li => li.category))].map(
