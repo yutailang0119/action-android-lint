@@ -7,6 +7,7 @@ import * as github from '@actions/github'
 export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
   core.info('Creating job summary for Android Lint results')
   const baseUrl = getBaseUrl()
+  core.info(`BaseUrl: ${baseUrl}`)
 
   const summary = core.summary.addHeading('Android Lint Results').addBreak()
   const badges = getLintReportBadges(lintIssues)
@@ -93,7 +94,9 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
       } else if (row.contents instanceof Link) {
         summary.addLink(row.contents.text, row.contents.address)
       } else {
-        summary.addRaw(row.contents.join('\n'))
+        if (row.contents.length > 0) {
+          summary.addRaw(row.contents.join('\n'))
+        }
       }
     }
   } else {

@@ -432,6 +432,7 @@ const github = __importStar(__nccwpck_require__(5438));
 async function buildJobSummary(lintIssues) {
     core.info('Creating job summary for Android Lint results');
     const baseUrl = getBaseUrl();
+    core.info(`BaseUrl: ${baseUrl}`);
     const summary = core.summary.addHeading('Android Lint Results').addBreak();
     const badges = getLintReportBadges(lintIssues);
     for (const badge of badges) {
@@ -511,7 +512,9 @@ async function buildJobSummary(lintIssues) {
                 summary.addLink(row.contents.text, row.contents.address);
             }
             else {
-                summary.addRaw(row.contents.join('\n'));
+                if (row.contents.length > 0) {
+                    summary.addRaw(row.contents.join('\n'));
+                }
             }
         }
     }
