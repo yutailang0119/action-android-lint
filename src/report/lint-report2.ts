@@ -1,18 +1,18 @@
 import {LintIssue} from '../lint-issue'
 import * as core from '@actions/core'
-import {Align, link, table} from '../utils/markdown_utils'
 import {slug} from '../utils/slugger'
-import {SummaryTableRow, SummaryTableCell} from '@actions/core/lib/summary'
+import {SummaryTableRow} from '@actions/core/lib/summary'
+import * as github from '@actions/github'
 
 export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
   core.info('Creating job summary for Android Lint results')
+  const baseUrl = getBaseUrl()
 
-  const summary = core.summary
-    .addHeading('Android Lint Results')
-    .addBreak()
-    .addBreak()
+  const summary = core.summary.addHeading('Android Lint Results').addBreak()
   const badges = getLintReportBadges(lintIssues)
-  summary.addRaw(badges.join('\n'))
+  for (const badge of badges) {
+    summary.addRaw(badge).addBreak()
+  }
   summary.addHeading('Summary', 2)
   summary.addBreak().addBreak()
   if (lintIssues.length > 1) {
@@ -40,7 +40,11 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
         const idRows = categoryData.filter(cd => cd.id === id.issueId)
         const count = idRows.length
         if (idData && idRows && count > 0) {
-          const headerLink = link(idData.id, makeLintIssueSlug(idData.summary))
+          const headerLink = wrap(
+            'a',
+            idData.id,
+            baseUrl + makeLintIssueSlug(idData.summary)
+          )
           categorySummaryRows.push([
             count.toString(),
             headerLink,
@@ -48,24 +52,25 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
             `${getSeverityIcon(idData)}`
           ])
           idList.push({header: idData.summary, headerLevel: 2, contents: []})
-          const contents: string[] = []
-          contents.push(`${idData.explanation}`)
+          // Explanation
+          idList.push({header: 'Explanation', headerLevel: 3, contents: []})
+          idList.push({contents: [`${idData.explanation}`]})
           if (idData.url && idData.urls) {
-            contents.push(`More Info: ${link(idData.url, idData.urls)}`)
+            idList.push({contents: ['More Info: ']})
+            idList.push({contents: {text: idData.url, address: idData.urls}})
           }
+          // Code blocks
           for (const idI of idRows) {
-            contents.push('---')
-            contents.push(`${idI.file}:${idI.line}: ${idI.message}`)
+            idList.push({contents: [`${idI.file}:${idI.line}: ${idI.message}`]})
             if (idI.errorLine1) {
-              contents.push('```')
-              contents.push(`${idI.errorLine1}`)
+              const block = []
+              block.push(`${idI.errorLine1}`)
               if (idI.errorLine2) {
-                contents.push(`${idI.errorLine2}`)
+                block.push(`${idI.errorLine2}`)
               }
-              contents.push('```')
+              idList.push({contents: {contents: block}})
             }
           }
-          idList.push({header: 'Explanation', headerLevel: 3, contents})
         }
       }
       const array: SummaryTableRow[] = []
@@ -75,14 +80,21 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
         {data: 'Summary', header: true},
         {data: 'Severity', header: true}
       ])
-      for (const row of categorySummaryRows) {
-        array.push(row)
-      }
+      array.push(...categorySummaryRows)
       summary.addTable(array)
     }
+    summary.addSeparator()
     for (const row of idList) {
-      summary.addHeading(row.header, row.headerLevel)
-      summary.addRaw(row.contents.join('\n'))
+      if (row.header) {
+        summary.addHeading(row.header, row.headerLevel)
+      }
+      if (row.contents instanceof CodeBlock) {
+        summary.addCodeBlock(row.contents.contents.join('\n'))
+      } else if (row.contents instanceof Link) {
+        summary.addLink(row.contents.text, row.contents.address)
+      } else {
+        summary.addRaw(row.contents.join('\n'))
+      }
     }
   } else {
     summary.addRaw('Congratulations! No lint issues found!')
@@ -90,10 +102,35 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
   await summary.write()
 }
 
+function wrap(tag: string, content: string, attrs = {}): string {
+  const htmlAttrs = Object.entries(attrs)
+    .map(([key, value]) => ` ${key}="${value}"`)
+    .join('')
+  if (!content) {
+    return `<${tag}${htmlAttrs}>`
+  }
+  return `<${tag}${htmlAttrs}>${content}</${tag}>`
+}
+
+function getBaseUrl(): string {
+  const runId = github.context.runId
+  const repo = github.context.repo
+  return `https://github.com/${repo}/actions/runs/${runId}`
+}
+
 interface IdRow {
-  header: string
-  headerLevel: number
-  contents: string[]
+  header?: string
+  headerLevel?: number
+  contents: string[] | CodeBlock | Link
+}
+
+class CodeBlock {
+  contents: string[] = []
+}
+
+class Link {
+  text = ''
+  address = ''
 }
 
 function getSeverityIcon(lintIssue: LintIssue): string {

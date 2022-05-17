@@ -427,16 +427,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.buildJobSummary = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-const markdown_utils_1 = __nccwpck_require__(6988);
 const slugger_1 = __nccwpck_require__(3328);
+const github = __importStar(__nccwpck_require__(5438));
 async function buildJobSummary(lintIssues) {
     core.info('Creating job summary for Android Lint results');
-    const summary = core.summary
-        .addHeading('Android Lint Results')
-        .addBreak()
-        .addBreak();
+    const baseUrl = getBaseUrl();
+    const summary = core.summary.addHeading('Android Lint Results').addBreak();
     const badges = getLintReportBadges(lintIssues);
-    summary.addRaw(badges.join('\n'));
+    for (const badge of badges) {
+        summary.addRaw(badge).addBreak();
+    }
     summary.addHeading('Summary', 2);
     summary.addBreak().addBreak();
     if (lintIssues.length > 1) {
@@ -460,7 +460,7 @@ async function buildJobSummary(lintIssues) {
                 const idRows = categoryData.filter(cd => cd.id === id.issueId);
                 const count = idRows.length;
                 if (idData && idRows && count > 0) {
-                    const headerLink = (0, markdown_utils_1.link)(idData.id, makeLintIssueSlug(idData.summary));
+                    const headerLink = wrap('a', idData.id, baseUrl + makeLintIssueSlug(idData.summary));
                     categorySummaryRows.push([
                         count.toString(),
                         headerLink,
@@ -468,24 +468,25 @@ async function buildJobSummary(lintIssues) {
                         `${getSeverityIcon(idData)}`
                     ]);
                     idList.push({ header: idData.summary, headerLevel: 2, contents: [] });
-                    const contents = [];
-                    contents.push(`${idData.explanation}`);
+                    // Explanation
+                    idList.push({ header: 'Explanation', headerLevel: 3, contents: [] });
+                    idList.push({ contents: [`${idData.explanation}`] });
                     if (idData.url && idData.urls) {
-                        contents.push(`More Info: ${(0, markdown_utils_1.link)(idData.url, idData.urls)}`);
+                        idList.push({ contents: ['More Info: '] });
+                        idList.push({ contents: { text: idData.url, address: idData.urls } });
                     }
+                    // Code blocks
                     for (const idI of idRows) {
-                        contents.push('---');
-                        contents.push(`${idI.file}:${idI.line}: ${idI.message}`);
+                        idList.push({ contents: [`${idI.file}:${idI.line}: ${idI.message}`] });
                         if (idI.errorLine1) {
-                            contents.push('```');
-                            contents.push(`${idI.errorLine1}`);
+                            const block = [];
+                            block.push(`${idI.errorLine1}`);
                             if (idI.errorLine2) {
-                                contents.push(`${idI.errorLine2}`);
+                                block.push(`${idI.errorLine2}`);
                             }
-                            contents.push('```');
+                            idList.push({ contents: { contents: block } });
                         }
                     }
-                    idList.push({ header: 'Explanation', headerLevel: 3, contents });
                 }
             }
             const array = [];
@@ -495,14 +496,23 @@ async function buildJobSummary(lintIssues) {
                 { data: 'Summary', header: true },
                 { data: 'Severity', header: true }
             ]);
-            for (const row of categorySummaryRows) {
-                array.push(row);
-            }
+            array.push(...categorySummaryRows);
             summary.addTable(array);
         }
+        summary.addSeparator();
         for (const row of idList) {
-            summary.addHeading(row.header, row.headerLevel);
-            summary.addRaw(row.contents.join('\n'));
+            if (row.header) {
+                summary.addHeading(row.header, row.headerLevel);
+            }
+            if (row.contents instanceof CodeBlock) {
+                summary.addCodeBlock(row.contents.contents.join('\n'));
+            }
+            else if (row.contents instanceof Link) {
+                summary.addLink(row.contents.text, row.contents.address);
+            }
+            else {
+                summary.addRaw(row.contents.join('\n'));
+            }
         }
     }
     else {
@@ -511,6 +521,31 @@ async function buildJobSummary(lintIssues) {
     await summary.write();
 }
 exports.buildJobSummary = buildJobSummary;
+function wrap(tag, content, attrs = {}) {
+    const htmlAttrs = Object.entries(attrs)
+        .map(([key, value]) => ` ${key}="${value}"`)
+        .join('');
+    if (!content) {
+        return `<${tag}${htmlAttrs}>`;
+    }
+    return `<${tag}${htmlAttrs}>${content}</${tag}>`;
+}
+function getBaseUrl() {
+    const runId = github.context.runId;
+    const repo = github.context.repo;
+    return `https://github.com/${repo}/actions/runs/${runId}`;
+}
+class CodeBlock {
+    constructor() {
+        this.contents = [];
+    }
+}
+class Link {
+    constructor() {
+        this.text = '';
+        this.address = '';
+    }
+}
 function getSeverityIcon(lintIssue) {
     switch (lintIssue.severity) {
         case 'Fatal':
@@ -794,53 +829,6 @@ async function listGitTree(octokit, sha, path) {
     }
     return result;
 }
-
-
-/***/ }),
-
-/***/ 6988:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ellipsis = exports.fixEol = exports.tableEscape = exports.table = exports.link = exports.Align = void 0;
-// eslint-disable-next-line filenames/match-regex
-var Align;
-(function (Align) {
-    Align["Left"] = ":---";
-    Align["Center"] = ":---:";
-    Align["Right"] = "---:";
-    Align["Home"] = "---";
-})(Align = exports.Align || (exports.Align = {}));
-function link(title, address) {
-    return `[${title}](${address})`;
-}
-exports.link = link;
-function table(headers, align, ...rows) {
-    const headerRow = `|${headers.map(tableEscape).join('|')}|`;
-    const alignRow = `|${align.join('|')}|`;
-    const contentRows = rows
-        .map(row => `|${row.map(tableEscape).join('|')}|`)
-        .join('\n');
-    return [headerRow, alignRow, contentRows].join('\n');
-}
-exports.table = table;
-function tableEscape(content) {
-    return content.toString().replace('|', '\\|');
-}
-exports.tableEscape = tableEscape;
-function fixEol(text) {
-    return text?.replace(/\r/g, '') ?? '';
-}
-exports.fixEol = fixEol;
-function ellipsis(text, maxLength) {
-    if (text.length <= maxLength) {
-        return text;
-    }
-    return `${text.substr(0, maxLength - 3)}...`;
-}
-exports.ellipsis = ellipsis;
 
 
 /***/ }),
