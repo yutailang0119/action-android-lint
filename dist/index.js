@@ -507,7 +507,7 @@ async function buildJobSummary(lintIssues) {
             }
             if (row.contents instanceof CodeBlock) {
                 for (const contents of row.contents.contents) {
-                    summary.addCodeBlock(contents).addBreak();
+                    summary.addBreak().addCodeBlock(contents).addBreak();
                 }
             }
             else if (row.contents instanceof Link) {
@@ -518,6 +518,7 @@ async function buildJobSummary(lintIssues) {
                     summary.addRaw(row.contents.join('\n'));
                 }
             }
+            summary.addBreak();
         }
     }
     else {

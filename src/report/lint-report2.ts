@@ -91,7 +91,7 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
       }
       if (row.contents instanceof CodeBlock) {
         for (const contents of row.contents.contents) {
-          summary.addCodeBlock(contents).addBreak()
+          summary.addBreak().addCodeBlock(contents).addBreak()
         }
       } else if (row.contents instanceof Link) {
         summary.addLink(row.contents.text, row.contents.address)
@@ -100,6 +100,7 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
           summary.addRaw(row.contents.join('\n'))
         }
       }
+      summary.addBreak()
     }
   } else {
     summary.addRaw('Congratulations! No lint issues found!')
