@@ -436,7 +436,7 @@ async function buildJobSummary(lintIssues) {
     const summary = core.summary.addHeading('Android Lint Results').addBreak();
     const badges = getLintReportBadges(lintIssues);
     for (const badge of badges) {
-        summary.addRaw(badge).addBreak();
+        summary.addImage(badge.location, badge.hintText);
     }
     summary.addHeading('Summary', 2);
     summary.addBreak().addBreak();
@@ -580,22 +580,67 @@ function getBadges(informational, warnings, errors, fatalities) {
     let uri = '';
     if (informational > 0) {
         uri = encodeURIComponent(`Informational-${informational}-${infoColor}`);
-        badges.push(`![Informational lint issues](https://img.shields.io/badge/${uri})`);
+        badges.push({
+            location: `https://img.shields.io/badge/${uri}`,
+            hintText: 'Informational lint issues'
+        });
     }
     if (warnings > 0) {
         uri = encodeURIComponent(`Warnings-${warnings}-${warningColor}`);
-        badges.push(`![Warning lint issues](https://img.shields.io/badge/${uri})`);
+        badges.push({
+            location: `https://img.shields.io/badge/${uri}`,
+            hintText: 'Warning lint issues'
+        });
     }
     if (errors > 0) {
         uri = encodeURIComponent(`Errors-${errors}-${errorColor}`);
-        badges.push(`![Error lint issues](https://img.shields.io/badge/${uri})`);
+        badges.push({
+            location: `https://img.shields.io/badge/${uri}`,
+            hintText: 'Error lint issues'
+        });
     }
     if (fatalities > 0) {
         uri = encodeURIComponent(`Fatal-${fatalities}-${fatalColor}`);
-        badges.push(`![Fatal lint issues](https://img.shields.io/badge/${uri})`);
+        badges.push({
+            location: `https://img.shields.io/badge/${uri}`,
+            hintText: 'Fatal lint issues'
+        });
     }
     return badges;
 }
+// function getBadges(
+//   informational: number,
+//   warnings: number,
+//   errors: number,
+//   fatalities: number
+// ): string[] {
+//   const badges = []
+//   const infoColor = 'informational'
+//   const warningColor = 'yellow'
+//   const errorColor = 'important'
+//   const fatalColor = 'critical'
+//   let uri = ''
+//   if (informational > 0) {
+//     uri = encodeURIComponent(`Informational-${informational}-${infoColor}`)
+//     badges.push(
+//       `![Informational lint issues](https://img.shields.io/badge/${uri})`
+//     )
+//   }
+//   if (warnings > 0) {
+//     uri = encodeURIComponent(`Warnings-${warnings}-${warningColor}`)
+//     badges.push(`![Warning lint issues](https://img.shields.io/badge/${uri})`)
+//   }
+//   if (errors > 0) {
+//     uri = encodeURIComponent(`Errors-${errors}-${errorColor}`)
+//     badges.push(`![Error lint issues](https://img.shields.io/badge/${uri})`)
+//   }
+//   if (fatalities > 0) {
+//     uri = encodeURIComponent(`Fatal-${fatalities}-${fatalColor}`)
+//     badges.push(`![Fatal lint issues](https://img.shields.io/badge/${uri})`)
+//   }
+//
+//   return badges
+// }
 
 
 /***/ }),
