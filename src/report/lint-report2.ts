@@ -90,7 +90,9 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
         summary.addHeading(row.header, row.headerLevel)
       }
       if (row.contents instanceof CodeBlock) {
-        summary.addCodeBlock(row.contents.contents.join('\n'), 'java')
+        for (const contents of row.contents.contents) {
+          summary.addCodeBlock(contents).addBreak()
+        }
       } else if (row.contents instanceof Link) {
         summary.addLink(row.contents.text, row.contents.address)
       } else {
