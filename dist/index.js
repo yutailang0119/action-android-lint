@@ -448,7 +448,7 @@ function trimReport(lines) {
     const maxReportLength = MAX_REPORT_LENGTH - maxErrorMsgLength;
     let reportLength = 0;
     let codeBlock = false;
-    let endLineIndex = 0;
+    let endLineIndex;
     for (endLineIndex = 0; endLineIndex < lines.length; endLineIndex++) {
         const line = lines[endLineIndex];
         const lineLength = getByteLength(line);
@@ -470,8 +470,6 @@ function trimReport(lines) {
 function renderLintReport(lintIssues, baseUrl) {
     const sections = [];
     sections.push('\n\n');
-    // const badges = getLintReportBadges(lintIssues)
-    // sections.push(...badges)
     const issues = getLintIssuesReport(lintIssues, baseUrl);
     sections.push(...issues);
     return sections;
@@ -557,38 +555,6 @@ function getSeverityIcon(lintIssue) {
             return ':information_source:';
     }
 }
-function getLintReportBadges(lintIssues) {
-    const informational = lintIssues.reduce((sum, li) => sum + (li.severity === 'Information' ? 1 : 0), 0);
-    const warnings = lintIssues.reduce((sum, li) => sum + (li.severity === 'Warning' ? 1 : 0), 0);
-    const errors = lintIssues.reduce((sum, li) => sum + (li.severity === 'Error' ? 1 : 0), 0);
-    const fatals = lintIssues.reduce((sum, li) => sum + (li.severity === 'Fatal' ? 1 : 0), 0);
-    return getBadges(informational, warnings, errors, fatals);
-}
-function getBadges(informational, warnings, errors, fatalities) {
-    const badges = [];
-    const infoColor = 'informational';
-    const warningColor = 'yellow';
-    const errorColor = 'important';
-    const fatalColor = 'critical';
-    let uri = '';
-    if (informational > 0) {
-        uri = encodeURIComponent(`Informational-${informational}-${infoColor}`);
-        badges.push(`![Informational lint issues](https://img.shields.io/badge/${uri})`);
-    }
-    if (warnings > 0) {
-        uri = encodeURIComponent(`Warnings-${warnings}-${warningColor}`);
-        badges.push(`![Warning lint issues](https://img.shields.io/badge/${uri})`);
-    }
-    if (errors > 0) {
-        uri = encodeURIComponent(`Errors-${errors}-${errorColor}`);
-        badges.push(`![Error lint issues](https://img.shields.io/badge/${uri})`);
-    }
-    if (fatalities > 0) {
-        uri = encodeURIComponent(`Fatal-${fatalities}-${fatalColor}`);
-        badges.push(`![Fatal lint issues](https://img.shields.io/badge/${uri})`);
-    }
-    return badges;
-}
 function getByteLength(text) {
     return Buffer.byteLength(text, 'utf8');
 }
@@ -627,7 +593,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.buildJobSummary = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-const slugger_1 = __nccwpck_require__(3328);
 const github = __importStar(__nccwpck_require__(5438));
 const lint_report_1 = __nccwpck_require__(6784);
 async function buildJobSummary(lintIssues) {
@@ -639,100 +604,10 @@ async function buildJobSummary(lintIssues) {
     for (const badge of badges) {
         summary.addImage(badge.location, badge.hintText);
     }
-    // summary.addHeading('Summary', 2)
-    // summary.addBreak().addBreak()
     if (lintIssues.length > 1) {
+        // TODO - Perhaps someday, use the built-in markdown helpers in core.summary,
+        // TODO - but a first attempt proved to be fruitless
         summary.addRaw((0, lint_report_1.buildLintReportMarkdown)(lintIssues, baseUrl), true);
-        // const categories = [...new Set(lintIssues.map(li => li.category))].map(
-        //   (cat, catIndex) => {
-        //     const category = cat
-        //     const index = catIndex
-        //     return {category, index}
-        //   }
-        // )
-        // const idList: IdRow[] = []
-        // for (const cat of categories) {
-        //   summary.addHeading(`${cat.category}`, 3)
-        //   const categoryData = lintIssues.filter(li => li.category === cat.category)
-        //   const ids = [...new Set(categoryData.map(li => li.id))].map(
-        //     (li, idIndex) => {
-        //       const issueId = li
-        //       const index = idIndex
-        //       return {issueId, index}
-        //     }
-        //   )
-        //   const categorySummaryRows: string[][] = []
-        //   for (const id of ids) {
-        //     const idData = categoryData.find(cd => cd.id === id.issueId)
-        //     const idRows = categoryData.filter(cd => cd.id === id.issueId)
-        //     const count = idRows.length
-        //     if (idData && idRows && count > 0) {
-        //       const headerLink = wrap(
-        //         'a',
-        //         idData.id,
-        //         baseUrl + makeLintIssueSlug(idData.summary)
-        //       )
-        //       categorySummaryRows.push([
-        //         count.toString(),
-        //         headerLink,
-        //         idData.summary,
-        //         `${getSeverityIcon(idData)}`
-        //       ])
-        //       idList.push({header: idData.summary, headerLevel: 2, contents: []})
-        //       // Explanation
-        //       idList.push({header: 'Explanation', headerLevel: 3, contents: []})
-        //       idList.push({contents: [`${idData.explanation}`]})
-        //       if (idData.url && idData.urls) {
-        //         idList.push({contents: ['More Info: ']})
-        //         idList.push({contents: {text: idData.url, address: idData.urls}})
-        //       }
-        //       // Code blocks
-        //       for (const idI of idRows) {
-        //         idList.push({contents: [`${idI.file}:${idI.line}: ${idI.message}`]})
-        //         if (idI.errorLine1) {
-        //           const block = []
-        //           block.push(`${idI.errorLine1}`)
-        //           if (idI.errorLine2) {
-        //             block.push(`${idI.errorLine2}`)
-        //           }
-        //           idList.push({contents: {contents: block}})
-        //         }
-        //       }
-        //     }
-        //   }
-        //   const array: SummaryTableRow[] = []
-        //   array.push([
-        //     {data: 'Count', header: true},
-        //     {data: 'Id', header: true},
-        //     {data: 'Summary', header: true},
-        //     {data: 'Severity', header: true}
-        //   ])
-        //   array.push(...categorySummaryRows)
-        //   summary.addTable(array)
-        // }
-        // summary.addSeparator()
-        // for (const row of idList) {
-        //   if (row.header) {
-        //     summary.addHeading(row.header, row.headerLevel)
-        //   }
-        //   if (row.contents instanceof CodeBlock) {
-        //     const rows: string[] = []
-        //     rows.push('```')
-        //     for (const contents of row.contents.contents) {
-        //       rows.push(contents)
-        //     }
-        //     rows.push('```')
-        //     summary.addRaw(rows.join('\n'), true)
-        //   } else if (row.contents instanceof Link) {
-        //     // summary.addLink(row.contents.text, row.contents.address)
-        //     summary.addRaw(wrap('a', row.contents.text, row.contents.address), true)
-        //   } else {
-        //     if (row.contents.length > 0) {
-        //       summary.addRaw(row.contents.join('\n'), true)
-        //     }
-        //   }
-        //   summary.addBreak()
-        // }
     }
     else {
         summary.addRaw('Congratulations! No lint issues found!');
@@ -740,45 +615,10 @@ async function buildJobSummary(lintIssues) {
     await summary.write();
 }
 exports.buildJobSummary = buildJobSummary;
-function wrap(tag, content, attrs = {}) {
-    const htmlAttrs = Object.entries(attrs)
-        .map(([key, value]) => ` ${key}="${value}"`)
-        .join('');
-    if (!content) {
-        return `<${tag}${htmlAttrs}>`;
-    }
-    return `<${tag}${htmlAttrs}>${content}</${tag}>`;
-}
 function getBaseUrl() {
     const runId = github.context.runId;
     const repo = github.context.repo;
     return `https://github.com/${repo.owner}/${repo.repo}/actions/runs/${runId}`;
-}
-class CodeBlock {
-    constructor() {
-        this.contents = [];
-    }
-}
-class Link {
-    constructor() {
-        this.text = '';
-        this.address = '';
-    }
-}
-function getSeverityIcon(lintIssue) {
-    switch (lintIssue.severity) {
-        case 'Fatal':
-            return ':rotating_light:';
-        case 'Error':
-            return ':bangbang:';
-        case 'Warning':
-            return ':warning:';
-        default:
-            return ':information_source:';
-    }
-}
-function makeLintIssueSlug(summary) {
-    return (0, slugger_1.slug)(summary).link;
 }
 function getLintReportBadges(lintIssues) {
     const informational = lintIssues.reduce((sum, li) => sum + (li.severity === 'Information' ? 1 : 0), 0);
@@ -824,39 +664,6 @@ function getBadges(informational, warnings, errors, fatalities) {
     }
     return badges;
 }
-// function getBadges(
-//   informational: number,
-//   warnings: number,
-//   errors: number,
-//   fatalities: number
-// ): string[] {
-//   const badges = []
-//   const infoColor = 'informational'
-//   const warningColor = 'yellow'
-//   const errorColor = 'important'
-//   const fatalColor = 'critical'
-//   let uri = ''
-//   if (informational > 0) {
-//     uri = encodeURIComponent(`Informational-${informational}-${infoColor}`)
-//     badges.push(
-//       `![Informational lint issues](https://img.shields.io/badge/${uri})`
-//     )
-//   }
-//   if (warnings > 0) {
-//     uri = encodeURIComponent(`Warnings-${warnings}-${warningColor}`)
-//     badges.push(`![Warning lint issues](https://img.shields.io/badge/${uri})`)
-//   }
-//   if (errors > 0) {
-//     uri = encodeURIComponent(`Errors-${errors}-${errorColor}`)
-//     badges.push(`![Error lint issues](https://img.shields.io/badge/${uri})`)
-//   }
-//   if (fatalities > 0) {
-//     uri = encodeURIComponent(`Fatal-${fatalities}-${fatalColor}`)
-//     badges.push(`![Fatal lint issues](https://img.shields.io/badge/${uri})`)
-//   }
-//
-//   return badges
-// }
 
 
 /***/ }),
