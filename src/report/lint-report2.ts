@@ -128,7 +128,7 @@ function wrap(tag: string, content: string, attrs = {}): string {
 function getBaseUrl(): string {
   const runId = github.context.runId
   const repo = github.context.repo
-  return `https://github.com/${repo}/actions/runs/${runId}`
+  return `https://github.com/${repo.owner}/${repo.repo}/actions/runs/${runId}`
 }
 
 interface IdRow {

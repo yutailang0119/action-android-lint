@@ -469,16 +469,16 @@ function trimReport(lines) {
 }
 function renderLintReport(lintIssues, baseUrl) {
     const sections = [];
-    sections.push('# Android Lint Results\n\n');
-    const badges = getLintReportBadges(lintIssues);
-    sections.push(...badges);
+    // sections.push('# Android Lint Results\n\n')
+    // const badges = getLintReportBadges(lintIssues)
+    // sections.push(...badges)
     const issues = getLintIssuesReport(lintIssues, baseUrl);
     sections.push(...issues);
     return sections;
 }
 function getLintIssuesReport(lintIssues, baseUrl) {
     const sections = [];
-    sections.push('## Summary\n\n');
+    // sections.push('## Summary\n\n')
     if (lintIssues.length > 1) {
         const categories = [...new Set(lintIssues.map(li => li.category))].map((cat, catIndex) => {
             const category = cat;
@@ -752,7 +752,7 @@ function wrap(tag, content, attrs = {}) {
 function getBaseUrl() {
     const runId = github.context.runId;
     const repo = github.context.repo;
-    return `https://github.com/${repo}/actions/runs/${runId}`;
+    return `https://github.com/${repo.owner}/${repo.repo}/actions/runs/${runId}`;
 }
 class CodeBlock {
     constructor() {
