@@ -3,6 +3,7 @@ import * as core from '@actions/core'
 import {slug} from '../utils/slugger'
 import {SummaryTableRow} from '@actions/core/lib/summary'
 import * as github from '@actions/github'
+import {buildLintReportMarkdown} from './lint-report'
 
 export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
   core.info('Creating job summary for Android Lint results')
@@ -17,91 +18,97 @@ export async function buildJobSummary(lintIssues: LintIssue[]): Promise<void> {
   summary.addHeading('Summary', 2)
   summary.addBreak().addBreak()
   if (lintIssues.length > 1) {
-    const categories = [...new Set(lintIssues.map(li => li.category))].map(
-      (cat, catIndex) => {
-        const category = cat
-        const index = catIndex
-        return {category, index}
-      }
-    )
-    const idList: IdRow[] = []
-    for (const cat of categories) {
-      summary.addHeading(`${cat.category}`, 3)
-      const categoryData = lintIssues.filter(li => li.category === cat.category)
-      const ids = [...new Set(categoryData.map(li => li.id))].map(
-        (li, idIndex) => {
-          const issueId = li
-          const index = idIndex
-          return {issueId, index}
-        }
-      )
-      const categorySummaryRows: string[][] = []
-      for (const id of ids) {
-        const idData = categoryData.find(cd => cd.id === id.issueId)
-        const idRows = categoryData.filter(cd => cd.id === id.issueId)
-        const count = idRows.length
-        if (idData && idRows && count > 0) {
-          const headerLink = wrap(
-            'a',
-            idData.id,
-            baseUrl + makeLintIssueSlug(idData.summary)
-          )
-          categorySummaryRows.push([
-            count.toString(),
-            headerLink,
-            idData.summary,
-            `${getSeverityIcon(idData)}`
-          ])
-          idList.push({header: idData.summary, headerLevel: 2, contents: []})
-          // Explanation
-          idList.push({header: 'Explanation', headerLevel: 3, contents: []})
-          idList.push({contents: [`${idData.explanation}`]})
-          if (idData.url && idData.urls) {
-            idList.push({contents: ['More Info: ']})
-            idList.push({contents: {text: idData.url, address: idData.urls}})
-          }
-          // Code blocks
-          for (const idI of idRows) {
-            idList.push({contents: [`${idI.file}:${idI.line}: ${idI.message}`]})
-            if (idI.errorLine1) {
-              const block = []
-              block.push(`${idI.errorLine1}`)
-              if (idI.errorLine2) {
-                block.push(`${idI.errorLine2}`)
-              }
-              idList.push({contents: {contents: block}})
-            }
-          }
-        }
-      }
-      const array: SummaryTableRow[] = []
-      array.push([
-        {data: 'Count', header: true},
-        {data: 'Id', header: true},
-        {data: 'Summary', header: true},
-        {data: 'Severity', header: true}
-      ])
-      array.push(...categorySummaryRows)
-      summary.addTable(array)
-    }
-    summary.addSeparator()
-    for (const row of idList) {
-      if (row.header) {
-        summary.addHeading(row.header, row.headerLevel)
-      }
-      if (row.contents instanceof CodeBlock) {
-        for (const contents of row.contents.contents) {
-          summary.addBreak().addCodeBlock(contents).addBreak()
-        }
-      } else if (row.contents instanceof Link) {
-        summary.addLink(row.contents.text, row.contents.address)
-      } else {
-        if (row.contents.length > 0) {
-          summary.addRaw(row.contents.join('\n'))
-        }
-      }
-      summary.addBreak()
-    }
+    summary.addRaw(buildLintReportMarkdown(lintIssues, baseUrl), true)
+    // const categories = [...new Set(lintIssues.map(li => li.category))].map(
+    //   (cat, catIndex) => {
+    //     const category = cat
+    //     const index = catIndex
+    //     return {category, index}
+    //   }
+    // )
+    // const idList: IdRow[] = []
+    // for (const cat of categories) {
+    //   summary.addHeading(`${cat.category}`, 3)
+    //   const categoryData = lintIssues.filter(li => li.category === cat.category)
+    //   const ids = [...new Set(categoryData.map(li => li.id))].map(
+    //     (li, idIndex) => {
+    //       const issueId = li
+    //       const index = idIndex
+    //       return {issueId, index}
+    //     }
+    //   )
+    //   const categorySummaryRows: string[][] = []
+    //   for (const id of ids) {
+    //     const idData = categoryData.find(cd => cd.id === id.issueId)
+    //     const idRows = categoryData.filter(cd => cd.id === id.issueId)
+    //     const count = idRows.length
+    //     if (idData && idRows && count > 0) {
+    //       const headerLink = wrap(
+    //         'a',
+    //         idData.id,
+    //         baseUrl + makeLintIssueSlug(idData.summary)
+    //       )
+    //       categorySummaryRows.push([
+    //         count.toString(),
+    //         headerLink,
+    //         idData.summary,
+    //         `${getSeverityIcon(idData)}`
+    //       ])
+    //       idList.push({header: idData.summary, headerLevel: 2, contents: []})
+    //       // Explanation
+    //       idList.push({header: 'Explanation', headerLevel: 3, contents: []})
+    //       idList.push({contents: [`${idData.explanation}`]})
+    //       if (idData.url && idData.urls) {
+    //         idList.push({contents: ['More Info: ']})
+    //         idList.push({contents: {text: idData.url, address: idData.urls}})
+    //       }
+    //       // Code blocks
+    //       for (const idI of idRows) {
+    //         idList.push({contents: [`${idI.file}:${idI.line}: ${idI.message}`]})
+    //         if (idI.errorLine1) {
+    //           const block = []
+    //           block.push(`${idI.errorLine1}`)
+    //           if (idI.errorLine2) {
+    //             block.push(`${idI.errorLine2}`)
+    //           }
+    //           idList.push({contents: {contents: block}})
+    //         }
+    //       }
+    //     }
+    //   }
+    //   const array: SummaryTableRow[] = []
+    //   array.push([
+    //     {data: 'Count', header: true},
+    //     {data: 'Id', header: true},
+    //     {data: 'Summary', header: true},
+    //     {data: 'Severity', header: true}
+    //   ])
+    //   array.push(...categorySummaryRows)
+    //   summary.addTable(array)
+    // }
+    // summary.addSeparator()
+    // for (const row of idList) {
+    //   if (row.header) {
+    //     summary.addHeading(row.header, row.headerLevel)
+    //   }
+    //   if (row.contents instanceof CodeBlock) {
+    //     const rows: string[] = []
+    //     rows.push('```')
+    //     for (const contents of row.contents.contents) {
+    //       rows.push(contents)
+    //     }
+    //     rows.push('```')
+    //     summary.addRaw(rows.join('\n'), true)
+    //   } else if (row.contents instanceof Link) {
+    //     // summary.addLink(row.contents.text, row.contents.address)
+    //     summary.addRaw(wrap('a', row.contents.text, row.contents.address), true)
+    //   } else {
+    //     if (row.contents.length > 0) {
+    //       summary.addRaw(row.contents.join('\n'), true)
+    //     }
+    //   }
+    //   summary.addBreak()
+    // }
   } else {
     summary.addRaw('Congratulations! No lint issues found!')
   }

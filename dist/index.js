@@ -396,6 +396,206 @@ exports.parseLintXml = parseLintXml;
 
 /***/ }),
 
+/***/ 6784:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.buildLintReportMarkdown = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const markdown_utils_1 = __nccwpck_require__(6988);
+const slugger_1 = __nccwpck_require__(3328);
+const MAX_REPORT_LENGTH = 1048576;
+function buildLintReportMarkdown(lintIssues, baseUrl) {
+    core.info('Generating lint analysis summary');
+    const lines = renderLintReport(lintIssues, baseUrl);
+    const report = lines.join('\n');
+    if (getByteLength(report) <= MAX_REPORT_LENGTH) {
+        return report;
+    }
+    core.warning(`Lint report summary exceeded limit of ${MAX_REPORT_LENGTH} bytes and will be trimmed`);
+    return trimReport(lines);
+}
+exports.buildLintReportMarkdown = buildLintReportMarkdown;
+function trimReport(lines) {
+    const closingBlock = '```';
+    const errorMsg = `**Report exceeded GitHub limit of ${MAX_REPORT_LENGTH} bytes and has been trimmed**`;
+    const maxErrorMsgLength = closingBlock.length + errorMsg.length + 2;
+    const maxReportLength = MAX_REPORT_LENGTH - maxErrorMsgLength;
+    let reportLength = 0;
+    let codeBlock = false;
+    let endLineIndex = 0;
+    for (endLineIndex = 0; endLineIndex < lines.length; endLineIndex++) {
+        const line = lines[endLineIndex];
+        const lineLength = getByteLength(line);
+        reportLength += lineLength + 1;
+        if (reportLength > maxReportLength) {
+            break;
+        }
+        if (line === '```') {
+            codeBlock = !codeBlock;
+        }
+    }
+    const reportLines = lines.slice(0, endLineIndex);
+    if (codeBlock) {
+        reportLines.push('```');
+    }
+    reportLines.push(errorMsg);
+    return reportLines.join('\n');
+}
+function renderLintReport(lintIssues, baseUrl) {
+    const sections = [];
+    sections.push('# Android Lint Results\n\n');
+    const badges = getLintReportBadges(lintIssues);
+    sections.push(...badges);
+    const issues = getLintIssuesReport(lintIssues, baseUrl);
+    sections.push(...issues);
+    return sections;
+}
+function getLintIssuesReport(lintIssues, baseUrl) {
+    const sections = [];
+    sections.push('## Summary\n\n');
+    if (lintIssues.length > 1) {
+        const categories = [...new Set(lintIssues.map(li => li.category))].map((cat, catIndex) => {
+            const category = cat;
+            const index = catIndex;
+            return { category, index };
+        });
+        const issueDetails = [];
+        for (const cat of categories) {
+            const idTables = [];
+            sections.push(`### ${cat.category}`);
+            const categoryData = lintIssues.filter(li => li.category === cat.category);
+            const ids = [...new Set(categoryData.map(li => li.id))].map((li, idIndex) => {
+                const issueId = li;
+                const index = idIndex;
+                return { issueId, index };
+            });
+            const categorySummaryRows = [];
+            for (const id of ids) {
+                const idData = categoryData.find(cd => cd.id === id.issueId);
+                const idRows = categoryData.filter(cd => cd.id === id.issueId);
+                const count = idRows.length;
+                if (idData && idRows && count > 0) {
+                    const lintSlug = makeLintIssueSlug(cat.index, id.index);
+                    const addr = baseUrl + lintSlug.link;
+                    const headerLink = (0, markdown_utils_1.link)(id.issueId, addr);
+                    categorySummaryRows.push([
+                        count.toString(),
+                        headerLink,
+                        idData.summary,
+                        `${getSeverityIcon(idData)}`
+                    ]);
+                    const nameLink = `<a id="${lintSlug.id}" href="${baseUrl + lintSlug.link}">${idData.summary}</a>`;
+                    idTables.push(`## ${nameLink}`);
+                    idTables.push(`### Explanation`);
+                    idTables.push(`${idData.explanation}`);
+                    if (idData.url && idData.urls) {
+                        idTables.push(`More Info: ${(0, markdown_utils_1.link)(idData.url, idData.urls)}`);
+                    }
+                    for (const idI of idRows) {
+                        idTables.push('---');
+                        idTables.push(`${idI.file}:${idI.line}: ${idI.message}`);
+                        if (idI.errorLine1) {
+                            idTables.push('```');
+                            idTables.push(`${idI.errorLine1}`);
+                            if (idI.errorLine2) {
+                                idTables.push(`${idI.errorLine2}`);
+                            }
+                            idTables.push('```');
+                        }
+                    }
+                }
+            }
+            const catTable = (0, markdown_utils_1.table)(['Count', 'Id', 'Summary', 'Severity'], [markdown_utils_1.Align.Right, markdown_utils_1.Align.Left, markdown_utils_1.Align.Left, markdown_utils_1.Align.Center], ...categorySummaryRows);
+            sections.push(catTable);
+            issueDetails.push(idTables.join('\n'));
+        }
+        sections.push(...issueDetails);
+    }
+    else {
+        sections.push('Congratulations! No lint issues found!');
+    }
+    return sections;
+}
+function makeLintIssueSlug(categoryIndex, idIndex) {
+    return (0, slugger_1.slug)(`c${categoryIndex}-${idIndex}`);
+}
+function getSeverityIcon(lintIssue) {
+    switch (lintIssue.severity) {
+        case 'Fatal':
+            return ':rotating_light:';
+        case 'Error':
+            return ':bangbang:';
+        case 'Warning':
+            return ':warning:';
+        default:
+            return ':information_source:';
+    }
+}
+function getLintReportBadges(lintIssues) {
+    const informational = lintIssues.reduce((sum, li) => sum + (li.severity === 'Information' ? 1 : 0), 0);
+    const warnings = lintIssues.reduce((sum, li) => sum + (li.severity === 'Warning' ? 1 : 0), 0);
+    const errors = lintIssues.reduce((sum, li) => sum + (li.severity === 'Error' ? 1 : 0), 0);
+    const fatals = lintIssues.reduce((sum, li) => sum + (li.severity === 'Fatal' ? 1 : 0), 0);
+    return getBadges(informational, warnings, errors, fatals);
+}
+function getBadges(informational, warnings, errors, fatalities) {
+    const badges = [];
+    const infoColor = 'informational';
+    const warningColor = 'yellow';
+    const errorColor = 'important';
+    const fatalColor = 'critical';
+    let uri = '';
+    if (informational > 0) {
+        uri = encodeURIComponent(`Informational-${informational}-${infoColor}`);
+        badges.push(`![Informational lint issues](https://img.shields.io/badge/${uri})`);
+    }
+    if (warnings > 0) {
+        uri = encodeURIComponent(`Warnings-${warnings}-${warningColor}`);
+        badges.push(`![Warning lint issues](https://img.shields.io/badge/${uri})`);
+    }
+    if (errors > 0) {
+        uri = encodeURIComponent(`Errors-${errors}-${errorColor}`);
+        badges.push(`![Error lint issues](https://img.shields.io/badge/${uri})`);
+    }
+    if (fatalities > 0) {
+        uri = encodeURIComponent(`Fatal-${fatalities}-${fatalColor}`);
+        badges.push(`![Fatal lint issues](https://img.shields.io/badge/${uri})`);
+    }
+    return badges;
+}
+function getByteLength(text) {
+    return Buffer.byteLength(text, 'utf8');
+}
+
+
+/***/ }),
+
 /***/ 2273:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -429,6 +629,7 @@ exports.buildJobSummary = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const slugger_1 = __nccwpck_require__(3328);
 const github = __importStar(__nccwpck_require__(5438));
+const lint_report_1 = __nccwpck_require__(6784);
 async function buildJobSummary(lintIssues) {
     core.info('Creating job summary for Android Lint results');
     const baseUrl = getBaseUrl();
@@ -441,85 +642,97 @@ async function buildJobSummary(lintIssues) {
     summary.addHeading('Summary', 2);
     summary.addBreak().addBreak();
     if (lintIssues.length > 1) {
-        const categories = [...new Set(lintIssues.map(li => li.category))].map((cat, catIndex) => {
-            const category = cat;
-            const index = catIndex;
-            return { category, index };
-        });
-        const idList = [];
-        for (const cat of categories) {
-            summary.addHeading(`${cat.category}`, 3);
-            const categoryData = lintIssues.filter(li => li.category === cat.category);
-            const ids = [...new Set(categoryData.map(li => li.id))].map((li, idIndex) => {
-                const issueId = li;
-                const index = idIndex;
-                return { issueId, index };
-            });
-            const categorySummaryRows = [];
-            for (const id of ids) {
-                const idData = categoryData.find(cd => cd.id === id.issueId);
-                const idRows = categoryData.filter(cd => cd.id === id.issueId);
-                const count = idRows.length;
-                if (idData && idRows && count > 0) {
-                    const headerLink = wrap('a', idData.id, baseUrl + makeLintIssueSlug(idData.summary));
-                    categorySummaryRows.push([
-                        count.toString(),
-                        headerLink,
-                        idData.summary,
-                        `${getSeverityIcon(idData)}`
-                    ]);
-                    idList.push({ header: idData.summary, headerLevel: 2, contents: [] });
-                    // Explanation
-                    idList.push({ header: 'Explanation', headerLevel: 3, contents: [] });
-                    idList.push({ contents: [`${idData.explanation}`] });
-                    if (idData.url && idData.urls) {
-                        idList.push({ contents: ['More Info: '] });
-                        idList.push({ contents: { text: idData.url, address: idData.urls } });
-                    }
-                    // Code blocks
-                    for (const idI of idRows) {
-                        idList.push({ contents: [`${idI.file}:${idI.line}: ${idI.message}`] });
-                        if (idI.errorLine1) {
-                            const block = [];
-                            block.push(`${idI.errorLine1}`);
-                            if (idI.errorLine2) {
-                                block.push(`${idI.errorLine2}`);
-                            }
-                            idList.push({ contents: { contents: block } });
-                        }
-                    }
-                }
-            }
-            const array = [];
-            array.push([
-                { data: 'Count', header: true },
-                { data: 'Id', header: true },
-                { data: 'Summary', header: true },
-                { data: 'Severity', header: true }
-            ]);
-            array.push(...categorySummaryRows);
-            summary.addTable(array);
-        }
-        summary.addSeparator();
-        for (const row of idList) {
-            if (row.header) {
-                summary.addHeading(row.header, row.headerLevel);
-            }
-            if (row.contents instanceof CodeBlock) {
-                for (const contents of row.contents.contents) {
-                    summary.addBreak().addCodeBlock(contents).addBreak();
-                }
-            }
-            else if (row.contents instanceof Link) {
-                summary.addLink(row.contents.text, row.contents.address);
-            }
-            else {
-                if (row.contents.length > 0) {
-                    summary.addRaw(row.contents.join('\n'));
-                }
-            }
-            summary.addBreak();
-        }
+        summary.addRaw((0, lint_report_1.buildLintReportMarkdown)(lintIssues, baseUrl), true);
+        // const categories = [...new Set(lintIssues.map(li => li.category))].map(
+        //   (cat, catIndex) => {
+        //     const category = cat
+        //     const index = catIndex
+        //     return {category, index}
+        //   }
+        // )
+        // const idList: IdRow[] = []
+        // for (const cat of categories) {
+        //   summary.addHeading(`${cat.category}`, 3)
+        //   const categoryData = lintIssues.filter(li => li.category === cat.category)
+        //   const ids = [...new Set(categoryData.map(li => li.id))].map(
+        //     (li, idIndex) => {
+        //       const issueId = li
+        //       const index = idIndex
+        //       return {issueId, index}
+        //     }
+        //   )
+        //   const categorySummaryRows: string[][] = []
+        //   for (const id of ids) {
+        //     const idData = categoryData.find(cd => cd.id === id.issueId)
+        //     const idRows = categoryData.filter(cd => cd.id === id.issueId)
+        //     const count = idRows.length
+        //     if (idData && idRows && count > 0) {
+        //       const headerLink = wrap(
+        //         'a',
+        //         idData.id,
+        //         baseUrl + makeLintIssueSlug(idData.summary)
+        //       )
+        //       categorySummaryRows.push([
+        //         count.toString(),
+        //         headerLink,
+        //         idData.summary,
+        //         `${getSeverityIcon(idData)}`
+        //       ])
+        //       idList.push({header: idData.summary, headerLevel: 2, contents: []})
+        //       // Explanation
+        //       idList.push({header: 'Explanation', headerLevel: 3, contents: []})
+        //       idList.push({contents: [`${idData.explanation}`]})
+        //       if (idData.url && idData.urls) {
+        //         idList.push({contents: ['More Info: ']})
+        //         idList.push({contents: {text: idData.url, address: idData.urls}})
+        //       }
+        //       // Code blocks
+        //       for (const idI of idRows) {
+        //         idList.push({contents: [`${idI.file}:${idI.line}: ${idI.message}`]})
+        //         if (idI.errorLine1) {
+        //           const block = []
+        //           block.push(`${idI.errorLine1}`)
+        //           if (idI.errorLine2) {
+        //             block.push(`${idI.errorLine2}`)
+        //           }
+        //           idList.push({contents: {contents: block}})
+        //         }
+        //       }
+        //     }
+        //   }
+        //   const array: SummaryTableRow[] = []
+        //   array.push([
+        //     {data: 'Count', header: true},
+        //     {data: 'Id', header: true},
+        //     {data: 'Summary', header: true},
+        //     {data: 'Severity', header: true}
+        //   ])
+        //   array.push(...categorySummaryRows)
+        //   summary.addTable(array)
+        // }
+        // summary.addSeparator()
+        // for (const row of idList) {
+        //   if (row.header) {
+        //     summary.addHeading(row.header, row.headerLevel)
+        //   }
+        //   if (row.contents instanceof CodeBlock) {
+        //     const rows: string[] = []
+        //     rows.push('```')
+        //     for (const contents of row.contents.contents) {
+        //       rows.push(contents)
+        //     }
+        //     rows.push('```')
+        //     summary.addRaw(rows.join('\n'), true)
+        //   } else if (row.contents instanceof Link) {
+        //     // summary.addLink(row.contents.text, row.contents.address)
+        //     summary.addRaw(wrap('a', row.contents.text, row.contents.address), true)
+        //   } else {
+        //     if (row.contents.length > 0) {
+        //       summary.addRaw(row.contents.join('\n'), true)
+        //     }
+        //   }
+        //   summary.addBreak()
+        // }
     }
     else {
         summary.addRaw('Congratulations! No lint issues found!');
@@ -880,6 +1093,53 @@ async function listGitTree(octokit, sha, path) {
     }
     return result;
 }
+
+
+/***/ }),
+
+/***/ 6988:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ellipsis = exports.fixEol = exports.tableEscape = exports.table = exports.link = exports.Align = void 0;
+// eslint-disable-next-line filenames/match-regex
+var Align;
+(function (Align) {
+    Align["Left"] = ":---";
+    Align["Center"] = ":---:";
+    Align["Right"] = "---:";
+    Align["Home"] = "---";
+})(Align = exports.Align || (exports.Align = {}));
+function link(title, address) {
+    return `[${title}](${address})`;
+}
+exports.link = link;
+function table(headers, align, ...rows) {
+    const headerRow = `|${headers.map(tableEscape).join('|')}|`;
+    const alignRow = `|${align.join('|')}|`;
+    const contentRows = rows
+        .map(row => `|${row.map(tableEscape).join('|')}|`)
+        .join('\n');
+    return [headerRow, alignRow, contentRows].join('\n');
+}
+exports.table = table;
+function tableEscape(content) {
+    return content.toString().replace('|', '\\|');
+}
+exports.tableEscape = tableEscape;
+function fixEol(text) {
+    return text?.replace(/\r/g, '') ?? '';
+}
+exports.fixEol = fixEol;
+function ellipsis(text, maxLength) {
+    if (text.length <= maxLength) {
+        return text;
+    }
+    return `${text.substr(0, maxLength - 3)}...`;
+}
+exports.ellipsis = ellipsis;
 
 
 /***/ }),
