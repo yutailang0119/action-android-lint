@@ -16,6 +16,7 @@ export const parseXmls = async (files: string[]): Promise<Annotation[]> => {
 export const parseXml = async (text: string): Promise<Annotation[]> => {
   const parser = new xml2js.Parser()
   const xml = await parser.parseStringPromise(text)
+  if (xml.issues.issue === undefined) return []
   return new Promise(resolve => {
     try {
       const annotations: Annotation[] = []

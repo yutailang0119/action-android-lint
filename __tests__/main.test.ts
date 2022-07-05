@@ -15,7 +15,7 @@ test('test runs', () => {
 
   try {
     const stdout = cp.execFileSync(np, [ip], options)
-    console.log(stdout)
+    console.log(stdout.toString())
     expect.assertions(1)
   } catch (error: any) {
     console.log(error.stdout.toString())
