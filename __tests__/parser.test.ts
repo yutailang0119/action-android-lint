@@ -4,7 +4,8 @@ import {Annotation} from '../src/annotation'
 import {parseXmls, parseXml} from '../src/parser'
 
 test('test parseXmls', () => {
-  const file = path.join(__dirname, 'resource', 'lint-results.xml')
+  const file1 = path.join(__dirname, 'resource', 'lint-results.xml')
+  const file2 = path.join(__dirname, 'resource', 'empty-results.xml')
 
   const annotation1 = new Annotation(
     'Warning',
@@ -21,7 +22,7 @@ test('test parseXmls', () => {
     44
   )
 
-  expect(parseXmls([file])).resolves.toEqual([annotation1, annotation2])
+  expect(parseXmls([file1, file2])).resolves.toEqual([annotation1, annotation2])
 })
 
 test('test parseXml', () => {
