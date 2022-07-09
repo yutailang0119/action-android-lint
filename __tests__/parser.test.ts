@@ -25,9 +25,9 @@ test('test parseXmls', () => {
   expect(parseXmls([file1, file2])).resolves.toEqual([annotation1, annotation2])
 })
 
-test('test parseXml', () => {
+test('test parseXml with issues', () => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-  <issues format="5" by="lint 3.6.1">
+  <issues format="6" by="lint 7.2.1">
       <issue
           id="CheckResult"
           severity="Error"
@@ -51,5 +51,14 @@ test('test parseXml', () => {
     33,
     44
   )
+
   expect(parseXml(xml)).resolves.toEqual([annotation])
+})
+
+test('test parseXml without issue', () => {
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+  <issues format="6" by="lint 7.2.1">
+  </issues>`
+
+  expect(parseXml(xml)).resolves.toEqual([])
 })
