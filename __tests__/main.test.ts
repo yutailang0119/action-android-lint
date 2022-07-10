@@ -22,3 +22,26 @@ test('test runs', () => {
     expect(error.status).toEqual(1)
   }
 })
+
+test('test runs without error', () => {
+  process.env['INPUT_REPORT-PATH'] = path.join(
+    __dirname,
+    'resource',
+    'empty-results.xml'
+  )
+  process.env['INPUT_FOLLOW-SYMBOLIC-LINKS'] = 'true'
+  const np = process.execPath
+  const ip = path.join(__dirname, '..', 'lib', 'main.js')
+  const options: cp.ExecFileSyncOptions = {
+    env: process.env
+  }
+
+  try {
+    const stdout = cp.execFileSync(np, [ip], options)
+    console.log(stdout.toString())
+  } catch (error: any) {
+    console.log(error.status)
+    console.log(error.stdout.toString())
+    expect.assertions(1)
+  }
+})
