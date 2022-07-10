@@ -22,7 +22,6 @@ export const parseXml = async (text: string): Promise<Annotation[]> => {
       const annotations: Annotation[] = []
       for (const issueElement of xml.issues.issue) {
         const issue = issueElement.$
-
         for (const locationElement of issueElement.location) {
           const location = locationElement.$
 
