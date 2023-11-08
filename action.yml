@@ -8,6 +8,9 @@ inputs:
   follow-symbolic-links:
     description: 'Indicates whether to follow symbolic links'
     default: true
+  ignore-warnings:
+    description: 'Ignore Lint Warnings'
+    default: false    
 runs:
   using: 'node16'
   main: 'dist/index.js'

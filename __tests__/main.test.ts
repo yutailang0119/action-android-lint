@@ -7,6 +7,7 @@ import {expect, test} from '@jest/globals'
 test('test runs', () => {
   process.env['INPUT_REPORT-PATH'] = path.join(__dirname, 'resource', '*.xml')
   process.env['INPUT_FOLLOW-SYMBOLIC-LINKS'] = 'true'
+  process.env['INPUT_IGNORE-WARNINGS'] = 'false'
   const np = process.execPath
   const ip = path.join(__dirname, '..', 'lib', 'main.js')
   const options: cp.ExecFileSyncOptions = {
@@ -30,6 +31,7 @@ test('test runs without error', () => {
     'empty-results.xml'
   )
   process.env['INPUT_FOLLOW-SYMBOLIC-LINKS'] = 'true'
+  process.env['INPUT_IGNORE-WARNINGS'] = 'false'
   const np = process.execPath
   const ip = path.join(__dirname, '..', 'lib', 'main.js')
   const options: cp.ExecFileSyncOptions = {
