@@ -22,7 +22,22 @@ test('test parseXmls', () => {
     44
   )
 
-  expect(parseXmls([file1, file2])).resolves.toEqual([annotation1, annotation2])
+  expect(parseXmls([file1, file2], false)).resolves.toEqual([annotation1, annotation2])
+})
+
+test('test parseXmls and ignore warnings', () => {
+  const file1 = path.join(__dirname, 'resource', 'lint-results.xml')
+  const file2 = path.join(__dirname, 'resource', 'empty-results.xml')
+
+  const annotation2 = new Annotation(
+    'Error',
+    'Ignoring results: The result of `subscribe` is not used',
+    'Foo.kt',
+    33,
+    44
+  )
+
+  expect(parseXmls([file1, file2], true)).resolves.toEqual([annotation2])
 })
 
 test('test parseXml with issues', () => {
@@ -52,7 +67,7 @@ test('test parseXml with issues', () => {
     44
   )
 
-  expect(parseXml(xml)).resolves.toEqual([annotation])
+  expect(parseXml(xml, false)).resolves.toEqual([annotation])
 })
 
 test('test parseXml without issue', () => {
@@ -60,5 +75,5 @@ test('test parseXml without issue', () => {
   <issues format="6" by="lint 7.2.1">
   </issues>`
 
-  expect(parseXml(xml)).resolves.toEqual([])
+  expect(parseXml(xml, false)).resolves.toEqual([])
 })
