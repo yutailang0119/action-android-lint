@@ -29,7 +29,7 @@ export const parseXml = async (
       for (const issueElement of xml.issues.issue) {
         const issue = issueElement.$
         if (ignoreWarnings === true && issue.severity !== 'Error') {
-          continue;
+          continue
         }
         for (const locationElement of issueElement.location) {
           const location = locationElement.$
