@@ -22,7 +22,10 @@ test('test parseXmls', () => {
     44
   )
 
-  expect(parseXmls([file1, file2], false)).resolves.toEqual([annotation1, annotation2])
+  expect(parseXmls([file1, file2], false)).resolves.toEqual([
+    annotation1,
+    annotation2
+  ])
 })
 
 test('test parseXmls and ignore warnings', () => {
