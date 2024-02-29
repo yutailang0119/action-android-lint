@@ -12,7 +12,7 @@ inputs:
     description: 'Ignore Lint Warnings'
     default: false    
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: 'check-square'
