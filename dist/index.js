@@ -187,16 +187,20 @@ const parseXml = async (text, ignoreWarnings) => {
             const annotations = [];
             for (const issueElement of xml.issues.issue) {
                 const issue = issueElement.$;
-                if (ignoreWarnings === true && issue.severity !== 'Error') {
-                    continue;
-                }
                 for (const locationElement of issueElement.location) {
                     const location = locationElement.$;
                     const annotation = new annotation_1.Annotation(issue.severity, `${issue.summary}: ${issue.message}`, location.file, parseInt(location.line), parseInt(location.column));
                     annotations.push(annotation);
                 }
             }
-            resolve(annotations);
+            if (ignoreWarnings === true) {
+                resolve(annotations.filter(annotation => {
+                    return annotation.severityLevel !== 'warning';
+                }));
+            }
+            else {
+                resolve(annotations);
+            }
         }
         catch (error) {
             core.debug(`failed to read ${error}`);
