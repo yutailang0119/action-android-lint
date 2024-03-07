@@ -10,7 +10,7 @@ inputs:
     default: true
   ignore-warnings:
     description: 'Ignore Lint Warnings'
-    default: false    
+    default: false
 runs:
   using: 'node20'
   main: 'dist/index.js'
