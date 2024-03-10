@@ -37,8 +37,8 @@ jobs:
       - run: ./gradlew lint
       - uses: yutailang0119/action-android-lint@v3
         with:
-          ignore-warnings: true # Ignore Lint Warnings
           report-path: build/reports/*.xml # Support glob patterns by https://www.npmjs.com/package/@actions/glob
+          ignore-warnings: true # Ignore Lint Warnings
         continue-on-error: false # If annotations contain error of severity, action-android-lint exit 1.
 ```
 
