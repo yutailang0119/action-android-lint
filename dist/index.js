@@ -106,10 +106,10 @@ const parser_1 = __nccwpck_require__(267);
 async function run() {
     try {
         const reportPath = core.getInput('report-path', { required: true });
-        const ignoreWarnings = core.getBooleanInput('ignore-warnings');
         const globOptions = {
             followSymbolicLinks: core.getBooleanInput('follow-symbolic-links')
         };
+        const ignoreWarnings = core.getBooleanInput('ignore-warnings');
         const globber = await glob.create(reportPath, globOptions);
         const files = await globber.glob();
         const annotations = await (0, parser_1.parseXmls)(files, ignoreWarnings);
@@ -187,16 +187,20 @@ const parseXml = async (text, ignoreWarnings) => {
             const annotations = [];
             for (const issueElement of xml.issues.issue) {
                 const issue = issueElement.$;
-                if (ignoreWarnings === true && issue.severity !== 'Error') {
-                    continue;
-                }
                 for (const locationElement of issueElement.location) {
                     const location = locationElement.$;
                     const annotation = new annotation_1.Annotation(issue.severity, `${issue.summary}: ${issue.message}`, location.file, parseInt(location.line), parseInt(location.column));
                     annotations.push(annotation);
                 }
             }
-            resolve(annotations);
+            if (ignoreWarnings === true) {
+                resolve(annotations.filter(annotation => {
+                    return annotation.severityLevel !== 'warning';
+                }));
+            }
+            else {
+                resolve(annotations);
+            }
         }
         catch (error) {
             core.debug(`failed to read ${error}`);

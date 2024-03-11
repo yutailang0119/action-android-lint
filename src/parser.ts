@@ -28,9 +28,6 @@ export const parseXml = async (
       const annotations: Annotation[] = []
       for (const issueElement of xml.issues.issue) {
         const issue = issueElement.$
-        if (ignoreWarnings === true && issue.severity !== 'Error') {
-          continue
-        }
         for (const locationElement of issueElement.location) {
           const location = locationElement.$
 
@@ -44,7 +41,15 @@ export const parseXml = async (
           annotations.push(annotation)
         }
       }
-      resolve(annotations)
+      if (ignoreWarnings === true) {
+        resolve(
+          annotations.filter(annotation => {
+            return annotation.severityLevel !== 'warning'
+          })
+        )
+      } else {
+        resolve(annotations)
+      }
     } catch (error) {
       core.debug(`failed to read ${error}`)
     }

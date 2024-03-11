@@ -6,10 +6,11 @@ import {parseXmls} from './parser'
 async function run(): Promise<void> {
   try {
     const reportPath = core.getInput('report-path', {required: true})
-    const ignoreWarnings = core.getBooleanInput('ignore-warnings')
     const globOptions = {
       followSymbolicLinks: core.getBooleanInput('follow-symbolic-links')
     }
+    const ignoreWarnings = core.getBooleanInput('ignore-warnings')
+
     const globber = await glob.create(reportPath, globOptions)
     const files = await globber.glob()
 
