@@ -106,10 +106,10 @@ const parser_1 = __nccwpck_require__(267);
 async function run() {
     try {
         const reportPath = core.getInput('report-path', { required: true });
-        const ignoreWarnings = core.getBooleanInput('ignore-warnings');
         const globOptions = {
             followSymbolicLinks: core.getBooleanInput('follow-symbolic-links')
         };
+        const ignoreWarnings = core.getBooleanInput('ignore-warnings');
         const globber = await glob.create(reportPath, globOptions);
         const files = await globber.glob();
         const annotations = await (0, parser_1.parseXmls)(files, ignoreWarnings);
