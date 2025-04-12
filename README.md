@@ -31,7 +31,7 @@ jobs:
       - name: set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: zulu
+          distribution: jetbrains
           java-version: 21
           cache: gradle
       - run: ./gradlew lint
