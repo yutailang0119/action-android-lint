@@ -7,7 +7,7 @@ import { parseXmls, parseXml } from '../src/parser.js'
 describe('parser.ts', () => {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-  it('test parseXmls', () => {
+  it('test parseXmls', async () => {
     const file1 = path.join(__dirname, 'resource', 'lint-results.xml')
     const file2 = path.join(__dirname, 'resource', 'empty-results.xml')
 
@@ -26,13 +26,13 @@ describe('parser.ts', () => {
       44
     )
 
-    expect(parseXmls([file1, file2], false)).resolves.toEqual([
+    await expect(parseXmls([file1, file2], false)).resolves.toEqual([
       annotation1,
       annotation2
     ])
   })
 
-  it('test parseXmls and ignore warnings', () => {
+  it('test parseXmls and ignore warnings', async () => {
     const file1 = path.join(__dirname, 'resource', 'lint-results.xml')
     const file2 = path.join(__dirname, 'resource', 'empty-results.xml')
 
@@ -44,10 +44,10 @@ describe('parser.ts', () => {
       44
     )
 
-    expect(parseXmls([file1, file2], true)).resolves.toEqual([annotation2])
+    await expect(parseXmls([file1, file2], true)).resolves.toEqual([annotation2])
   })
 
-  it('test parseXml with issues', () => {
+  it('test parseXml with issues', async () => {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <issues format="6" by="lint 7.2.1">
         <issue
@@ -74,14 +74,14 @@ describe('parser.ts', () => {
       44
     )
 
-    expect(parseXml(xml, false)).resolves.toEqual([annotation])
+    await expect(parseXml(xml, false)).resolves.toEqual([annotation])
   })
 
-  it('test parseXml without issue', () => {
+  it('test parseXml without issue', async () => {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <issues format="6" by="lint 7.2.1">
     </issues>`
 
-    expect(parseXml(xml, false)).resolves.toEqual([])
+    await expect(parseXml(xml, false)).resolves.toEqual([])
   })
 })
