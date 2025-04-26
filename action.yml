@@ -8,7 +8,9 @@ branding:
 
 inputs:
   report-path:
-    description: The lint report file path. Support glob patterns. e.g `build/reports/*.xml`
+    description:
+      The lint report file path. Support glob patterns. e.g
+      `build/reports/*.xml`
     required: true
   follow-symbolic-links:
     description: Indicates whether to follow symbolic links

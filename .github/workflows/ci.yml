@@ -57,5 +57,6 @@ jobs:
         id: test-action
         uses: ./
         with:
-          report-path: ${{ github.workspace }}/__tests__/resource/lint-results.xml
+          report-path:
+            ${{ github.workspace }}/__tests__/resource/lint-results.xml
         continue-on-error: true

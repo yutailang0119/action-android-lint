@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals'
 import * as path from 'path'
 import { fileURLToPath } from 'url'
-import {expect} from '@jest/globals'
+import { expect } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
 
 jest.unstable_mockModule('@actions/core', () => core)
@@ -40,7 +40,10 @@ describe('main.ts', () => {
     })
 
     await run()
-    expect(core.setFailed).toHaveBeenNthCalledWith(1, 'Android Lint with 1 error')
+    expect(core.setFailed).toHaveBeenNthCalledWith(
+      1,
+      'Android Lint with 1 error'
+    )
   })
 
   it('test runs without error', async () => {

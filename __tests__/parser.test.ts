@@ -1,8 +1,8 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
-import {expect} from '@jest/globals'
-import {Annotation} from '../src/annotation.js'
-import {parseXmls, parseXml} from '../src/parser.js'
+import { expect } from '@jest/globals'
+import { Annotation } from '../src/annotation.js'
+import { parseXmls, parseXml } from '../src/parser.js'
 
 describe('parser.ts', () => {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))

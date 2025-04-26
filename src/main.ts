@@ -1,11 +1,11 @@
 import * as core from '@actions/core'
 import * as glob from '@actions/glob'
-import {echoMessages} from './command.js'
-import {parseXmls} from './parser.js'
+import { echoMessages } from './command.js'
+import { parseXmls } from './parser.js'
 
 export async function run(): Promise<void> {
   try {
-    const reportPath = core.getInput('report-path', {required: true})
+    const reportPath = core.getInput('report-path', { required: true })
     const globOptions = {
       followSymbolicLinks: core.getBooleanInput('follow-symbolic-links')
     }
@@ -18,7 +18,7 @@ export async function run(): Promise<void> {
 
     echoMessages(annotations)
 
-    const errors = annotations.filter(annotation => {
+    const errors = annotations.filter((annotation) => {
       return annotation.severityLevel === 'error'
     })
     if (errors.length) {

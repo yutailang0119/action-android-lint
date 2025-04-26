@@ -2,11 +2,13 @@
 
 # GitHub Action for Android Lint
 
-This Action generates annotations from [Android Lint](https://developer.android.com/studio/write/lint) Report XML.
+This Action generates annotations from
+[Android Lint](https://developer.android.com/studio/write/lint) Report XML.
 
 ## Usage
 
-An example workflow(.github/workflows/android-lint.yml) to executing Android Lint follows:
+An example workflow(.github/workflows/android-lint.yml) to executing Android
+Lint follows:
 
 ```yml
 name: AndroidLint
@@ -48,9 +50,13 @@ jobs:
 
 ## References
 
-- Generated from [actions/typescript-action](https://github.com/actions/typescript-action) as template.
-- This refer to [mobileposse/github-android-lint-action](https://github.com/mobileposse/github-android-lint-action).
+- Generated from
+  [actions/typescript-action](https://github.com/actions/typescript-action) as
+  template.
+- This refer to
+  [mobileposse/github-android-lint-action](https://github.com/mobileposse/github-android-lint-action).
 
 ## License
 
-action-android-lint is available under the MIT license. See [the LICENSE file](./LICENSE) for more info.
+action-android-lint is available under the MIT license. See
+[the LICENSE file](./LICENSE) for more info.

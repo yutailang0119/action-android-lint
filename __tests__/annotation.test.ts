@@ -1,5 +1,5 @@
-import {expect} from '@jest/globals'
-import {Annotation} from '../src/annotation.js'
+import { expect } from '@jest/globals'
+import { Annotation } from '../src/annotation.js'
 
 describe('annotation.ts', () => {
   it('test Annotation.constructor with Warning', () => {
