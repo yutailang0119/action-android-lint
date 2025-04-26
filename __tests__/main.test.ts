@@ -1,49 +1,60 @@
-import * as process from 'process'
-import * as cp from 'child_process'
+import { jest } from '@jest/globals'
 import * as path from 'path'
-import {expect, test} from '@jest/globals'
+import url from 'url'
+import {expect} from '@jest/globals'
+import * as core from '../__fixtures__/core.js'
+
+jest.unstable_mockModule('@actions/core', () => core)
+
+const { run } = await import('../src/main.js')
 
 // shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  process.env['INPUT_REPORT-PATH'] = path.join(__dirname, 'resource', '*.xml')
-  process.env['INPUT_FOLLOW-SYMBOLIC-LINKS'] = 'true'
-  process.env['INPUT_IGNORE-WARNINGS'] = 'false'
-  const np = process.execPath
-  const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecFileSyncOptions = {
-    env: process.env
-  }
+describe('main.ts', () => {
+  const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
 
-  try {
-    const stdout = cp.execFileSync(np, [ip], options)
-    console.log(stdout.toString())
-    expect.assertions(1)
-  } catch (error: any) {
-    console.log(error.stdout.toString())
-    expect(error.status).toEqual(1)
-  }
-})
+  beforeEach(() => {
+    core.getBooleanInput.mockImplementation((name) => {
+      switch (name) {
+        case 'follow-symbolic-links':
+          return true
+        case 'ignore-warnings':
+          return false
+        default:
+          return false
+      }
+    })
+  })
 
-test('test runs without error', () => {
-  process.env['INPUT_REPORT-PATH'] = path.join(
-    __dirname,
-    'resource',
-    'empty-results.xml'
-  )
-  process.env['INPUT_FOLLOW-SYMBOLIC-LINKS'] = 'true'
-  process.env['INPUT_IGNORE-WARNINGS'] = 'false'
-  const np = process.execPath
-  const ip = path.join(__dirname, '..', 'lib', 'main.js')
-  const options: cp.ExecFileSyncOptions = {
-    env: process.env
-  }
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
 
-  try {
-    const stdout = cp.execFileSync(np, [ip], options)
-    console.log(stdout.toString())
-  } catch (error: any) {
-    console.log(error.status)
-    console.log(error.stdout.toString())
-    expect.assertions(1)
-  }
+  it('test runs', async () => {
+    core.getInput.mockImplementation((name) => {
+      switch (name) {
+        case 'report-path':
+          return path.join(__dirname, 'resource', '*.xml')
+        default:
+          return ''
+      }
+    })
+
+    await run()
+    expect(core.setFailed).toHaveBeenNthCalledWith(1, 'Android Lint with 1 error')
+  })
+
+  it('test runs without error', async () => {
+    core.getInput.mockImplementation((name) => {
+      switch (name) {
+        case 'report-path':
+          return path.join(__dirname, 'resource', 'empty-results.xml')
+        default:
+          return ''
+      }
+    })
+
+    await run()
+
+    expect(core.setFailed).not.toHaveBeenCalled()
+  })
 })
