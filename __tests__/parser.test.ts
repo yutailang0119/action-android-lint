@@ -44,7 +44,9 @@ describe('parser.ts', () => {
       44
     )
 
-    await expect(parseXmls([file1, file2], true)).resolves.toEqual([annotation2])
+    await expect(parseXmls([file1, file2], true)).resolves.toEqual([
+      annotation2
+    ])
   })
 
   it('test parseXml with issues', async () => {
