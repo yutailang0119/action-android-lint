@@ -1,7 +1,7 @@
 import path from 'path'
 import {expect, test} from '@jest/globals'
-import {Annotation} from '../src/annotation'
-import {parseXmls, parseXml} from '../src/parser'
+import {Annotation} from '../src/annotation.js'
+import {parseXmls, parseXml} from '../src/parser.js'
 
 test('test parseXmls', () => {
   const file1 = path.join(__dirname, 'resource', 'lint-results.xml')
