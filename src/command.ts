@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import {Annotation} from './annotation'
+import {Annotation} from './annotation.js'
 
 export const echoMessages = (annotations: Annotation[]): void => {
   for (const annotation of annotations) {

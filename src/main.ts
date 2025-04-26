@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as glob from '@actions/glob'
-import {echoMessages} from './command'
-import {parseXmls} from './parser'
+import {echoMessages} from './command.js'
+import {parseXmls} from './parser.js'
 
 async function run(): Promise<void> {
   try {

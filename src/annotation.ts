@@ -1,5 +1,5 @@
 import {AnnotationProperties} from '@actions/core'
-import {AnnotationSeverityLevel} from './annotation-severity-level'
+import {AnnotationSeverityLevel} from './annotation-severity-level.js'
 
 export class Annotation {
   severityLevel: AnnotationSeverityLevel
