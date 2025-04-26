@@ -1,11 +1,11 @@
 import path from 'path'
-import url from 'url'
+import { fileURLToPath } from 'url'
 import {expect} from '@jest/globals'
 import {Annotation} from '../src/annotation.js'
 import {parseXmls, parseXml} from '../src/parser.js'
 
 describe('parser.ts', () => {
-  const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
+  const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
   it('test parseXmls', () => {
     const file1 = path.join(__dirname, 'resource', 'lint-results.xml')

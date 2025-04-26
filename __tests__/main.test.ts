@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 import * as path from 'path'
-import url from 'url'
+import { fileURLToPath } from 'url'
 import {expect} from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
 
@@ -10,7 +10,7 @@ const { run } = await import('../src/main.js')
 
 // shows how the runner will run a javascript action with env / stdout protocol
 describe('main.ts', () => {
-  const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
+  const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
   beforeEach(() => {
     core.getBooleanInput.mockImplementation((name) => {
