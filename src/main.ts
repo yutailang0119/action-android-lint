@@ -3,7 +3,7 @@ import * as glob from '@actions/glob'
 import {echoMessages} from './command.js'
 import {parseXmls} from './parser.js'
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     const reportPath = core.getInput('report-path', {required: true})
     const globOptions = {
@@ -29,5 +29,3 @@ async function run(): Promise<void> {
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
-
-run()
