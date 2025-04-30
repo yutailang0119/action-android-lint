@@ -40,6 +40,7 @@ describe('main.ts', () => {
     })
 
     await run()
+
     expect(core.setFailed).toHaveBeenNthCalledWith(
       1,
       'Android Lint with 1 error'
