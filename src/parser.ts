@@ -1,5 +1,5 @@
-import fs from 'fs'
 import * as core from '@actions/core'
+import * as fs from 'fs'
 import * as xml2js from 'xml2js'
 import { Annotation } from './annotation.js'
 
