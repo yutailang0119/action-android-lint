@@ -6,7 +6,7 @@ describe('annotation.ts', () => {
     jest.resetAllMocks()
   })
 
-  it('test Annotation.constructor with Warning', () => {
+  it('Annotation.constructor with Warning', () => {
     const annotation = new Annotation(
       'Warning',
       'Useless parent layout: This `RelativeLayout` layout or its `FrameLayout` parent is useless; transfer the `background` attribute to the other view',
@@ -25,7 +25,7 @@ describe('annotation.ts', () => {
     })
   })
 
-  it('test Annotation.constructor with Error', () => {
+  it('Annotation.constructor with Error', () => {
     const annotation = new Annotation(
       'Error',
       'Ignoring results: The result of `subscribe` is not used',
@@ -44,7 +44,7 @@ describe('annotation.ts', () => {
     })
   })
 
-  it('test Annotation.constructor with Other', () => {
+  it('Annotation.constructor with Other', () => {
     const annotation = new Annotation('', '', 'layout.xml', 0, 0)
     expect(annotation.severityLevel).toEqual('warning')
   })

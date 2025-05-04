@@ -11,7 +11,7 @@ describe('parser.ts', () => {
     jest.resetAllMocks()
   })
 
-  it('test parseXmls', async () => {
+  it('parseXmls', async () => {
     const file1 = path.join(__dirname, 'resource', 'lint-results.xml')
     const file2 = path.join(__dirname, 'resource', 'empty-results.xml')
 
@@ -36,7 +36,7 @@ describe('parser.ts', () => {
     ])
   })
 
-  it('test parseXmls and ignore warnings', async () => {
+  it('parseXmls and ignore warnings', async () => {
     const file1 = path.join(__dirname, 'resource', 'lint-results.xml')
     const file2 = path.join(__dirname, 'resource', 'empty-results.xml')
 
@@ -53,7 +53,7 @@ describe('parser.ts', () => {
     ])
   })
 
-  it('test parseXml with issues', async () => {
+  it('parseXml with issues', async () => {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <issues format="6" by="lint 7.2.1">
         <issue
@@ -83,7 +83,7 @@ describe('parser.ts', () => {
     await expect(parseXml(xml, false)).resolves.toEqual([annotation])
   })
 
-  it('test parseXml without issue', async () => {
+  it('parseXml without issue', async () => {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <issues format="6" by="lint 7.2.1">
     </issues>`
