@@ -1,7 +1,6 @@
 import { jest } from '@jest/globals'
 import * as path from 'path'
 import { fileURLToPath } from 'url'
-import { expect } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
 
 jest.unstable_mockModule('@actions/core', () => core)

@@ -1,11 +1,15 @@
+import { jest } from '@jest/globals'
 import * as path from 'path'
 import { fileURLToPath } from 'url'
-import { expect } from '@jest/globals'
 import { Annotation } from '../src/annotation.js'
 import { parseXmls, parseXml } from '../src/parser.js'
 
 describe('parser.ts', () => {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
 
   it('test parseXmls', async () => {
     const file1 = path.join(__dirname, 'resource', 'lint-results.xml')

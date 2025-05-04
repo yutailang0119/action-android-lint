@@ -1,7 +1,11 @@
-import { expect } from '@jest/globals'
+import { jest } from '@jest/globals'
 import { Annotation } from '../src/annotation.js'
 
 describe('annotation.ts', () => {
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
   it('test Annotation.constructor with Warning', () => {
     const annotation = new Annotation(
       'Warning',
