@@ -1,14 +1,14 @@
-import fs from 'fs'
 import * as core from '@actions/core'
+import * as fs from 'fs'
 import * as xml2js from 'xml2js'
-import {Annotation} from './annotation'
+import { Annotation } from './annotation.js'
 
 export const parseXmls = async (
   files: string[],
   ignoreWarnings: boolean
 ): Promise<Annotation[]> => {
   const list = await Promise.all(
-    files.map(async file => {
+    files.map(async (file) => {
       const xml = fs.readFileSync(file, 'utf-8')
       return await parseXml(xml, ignoreWarnings)
     })
@@ -23,7 +23,7 @@ export const parseXml = async (
   const parser = new xml2js.Parser()
   const xml = await parser.parseStringPromise(text)
   if (xml.issues.issue === undefined) return []
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     try {
       const annotations: Annotation[] = []
       for (const issueElement of xml.issues.issue) {
@@ -43,7 +43,7 @@ export const parseXml = async (
       }
       if (ignoreWarnings === true) {
         resolve(
-          annotations.filter(annotation => {
+          annotations.filter((annotation) => {
             return annotation.severityLevel !== 'warning'
           })
         )
