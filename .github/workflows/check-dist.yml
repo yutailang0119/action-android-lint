@@ -37,6 +37,10 @@ jobs:
           node-version-file: .node-version
           cache: npm
 
+      - name: Remove dist/ Directory
+        id: remove-dist
+        run: npx rimraf ./dist
+
       - name: Install Dependencies
         id: install
         run: npm ci
@@ -66,7 +70,7 @@ jobs:
       - if: ${{ failure() && steps.diff.outcome == 'failure' }}
         name: Upload Artifact
         id: upload
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/
