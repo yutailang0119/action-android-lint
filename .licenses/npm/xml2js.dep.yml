@@ -1,14 +1,14 @@
 ---
-name: "@fastify/busboy"
-version: 2.1.1
+name: xml2js
+version: 0.6.2
 type: npm
-summary: A streaming parser for HTML form data for node.js
-homepage:
+summary: Simple XML to JavaScript object converter.
+homepage: https://github.com/Leonidas-from-XIV/node-xml2js
 license: mit
 licenses:
 - sources: LICENSE
-  text: |-
-    Copyright Brian White. All rights reserved.
+  text: |
+    Copyright 2010, 2011, 2012, 2013. All rights reserved.
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to
