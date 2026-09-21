@@ -1,7 +1,7 @@
 {
   "name": "action-android-lint",
   "description": "GitHub Actions for Android style and conventions",
-  "version": "4.0.0",
+  "version": "6.0.0",
   "author": "yutailang0119",
   "type": "module",
   "private": false,
